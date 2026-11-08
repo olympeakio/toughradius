@@ -15,6 +15,9 @@ const customTurkishMessages: TranslationMessages = {
     sign_out: 'Çıkış Yap',
     login_error: 'Giriş başarısız, lütfen kullanıcı adınızı ve parolanızı kontrol edin',
     welcome: 'Tekrar hoş geldiniz',
+    login_failed: 'Giriş başarısız',
+    missing_token: 'Giriş yanıtında token eksik',
+    session_expired: 'Oturumun süresi doldu, lütfen tekrar giriş yapın',
   },
   menu: {
     dashboard: 'Kontrol Paneli',
@@ -134,6 +137,9 @@ const customTurkishMessages: TranslationMessages = {
         remark_desc: 'Ek notlar ve açıklamalar',
         basic: 'Temel Bilgiler',
         time: 'Zaman Bilgileri',
+        basic_desc: 'Kullanıcının kimlik doğrulama bilgileri',
+        timing: 'Zaman Bilgileri',
+        timing_desc: 'Oluşturulma ve güncellenme zamanı',
       },
       helpers: {
         id: 'Sistem tarafından oluşturulan benzersiz tanımlayıcı',
@@ -152,10 +158,29 @@ const customTurkishMessages: TranslationMessages = {
         radius_class: 'RFC 2865 Class, olduğu gibi gönderilir. ocserv grupları için OU=group1;group2 kullanın',
         domain: 'Üreticiye özgü özellikler için alan adı (örn. Huawei domain), örn. enterprise.example.com',
         remark: 'İsteğe bağlı notlar, en fazla 1000 karakter',
+        ipv6_prefix_pool: 'Framed-IPv6-Pool havuz adı (SLAAC durum bilgisiz adres otomatik yapılandırması)',
+        delegated_ipv6_prefix: 'Statik Delegated-IPv6-Prefix, örn. 2001:db8:1234::/48',
+        delegated_ipv6_prefix_pool: 'DHCPv6-PD önek devretme havuzu adı (RFC 6911 §2.4, IPv6 önek havuzundan ayrıdır)',
+        radius_class_create: 'RFC 2865 Class, Access-Accept içinde olduğu gibi gönderilir. ocserv grupları için OU=group1;group2 kullanın; boş bırakılırsa tarife/profilden devralınır',
       },
       empty_text: {
         expire_time: 'Süresiz',
         no_remark: 'Not yok',
+      },
+      empty: {
+        title: 'Henüz kullanıcı yok',
+        description: 'İlk RADIUS kullanıcısını eklemek için "Oluştur" düğmesine tıklayın',
+        no_remark: 'Not bilgisi yok',
+      },
+      filter: {
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} kullanıcı',
+      },
+      expire: {
+        expired_days: 'Süresi %{days} gün önce doldu',
+        expires_in_days: '%{days} gün içinde sona erecek',
       },
     },
     'radius/online': {
@@ -225,6 +250,18 @@ const customTurkishMessages: TranslationMessages = {
         action_error: '%{action} isteği başarısız: %{message}',
         unknown_cause: 'bilinmeyen neden',
       },
+      empty: {
+        title: 'Çevrimiçi oturum yok',
+        description: 'Şu anda çevrimiçi kullanıcı yok',
+      },
+      filter: {
+        start_time_from: 'Başlangıç zamanı (başlangıç)',
+        start_time_to: 'Başlangıç zamanı (bitiş)',
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} çevrimiçi oturum',
+      },
     },
     'radius/accounting': {
       name: 'Accounting Kaydı |||| Accounting Kayıtları',
@@ -276,6 +313,18 @@ const customTurkishMessages: TranslationMessages = {
         traffic_desc: 'Oturum süresince yükleme ve indirme trafiği istatistikleri.',
         session_details: 'Oturum Ayrıntıları',
         session_details_desc: 'NAS portu ve hizmet türü ayrıntıları.',
+      },
+      empty: {
+        title: 'Henüz accounting kaydı yok',
+        description: 'Filtre koşullarını değiştirmeyi deneyin veya yeni oturum kayıtlarını bekleyin',
+      },
+      filter: {
+        start_time_from: 'Başlangıç zamanı (başlangıç)',
+        start_time_to: 'Başlangıç zamanı (bitiş)',
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} kayıt',
       },
     },
     'radius/profiles': {
@@ -347,6 +396,17 @@ const customTurkishMessages: TranslationMessages = {
       units: {
         kbps: 'Kbps',
       },
+      empty: {
+        title: 'Henüz profil yok',
+        description: 'İlk tarife/profili eklemek için "Oluştur" düğmesine tıklayın',
+        no_remark: 'Not bilgisi yok',
+      },
+      filter: {
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} profil',
+      },
     },
     'network/nas': {
       name: 'NAS Cihazı |||| NAS Cihazları',
@@ -390,6 +450,7 @@ const customTurkishMessages: TranslationMessages = {
         },
         timestamps: {
           title: 'Zaman Bilgileri',
+          description: 'Oluşturulma ve güncellenme zamanı',
         },
       },
       helpers: {
@@ -403,6 +464,16 @@ const customTurkishMessages: TranslationMessages = {
         tags: 'Virgülle ayrılmış etiketler, en fazla 200 karakter',
         remark: 'İsteğe bağlı not, en fazla 500 karakter',
         no_remark: 'Not yok',
+      },
+      empty: {
+        title: 'Henüz NAS cihazı yok',
+        description: 'İlk NAS cihazını eklemek için "Oluştur" düğmesine tıklayın',
+      },
+      filter: {
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} NAS cihazı',
       },
     },
     'network/nodes': {
@@ -420,12 +491,25 @@ const customTurkishMessages: TranslationMessages = {
         basic_desc: 'Düğümün temel yapılandırması',
         remark: 'Not',
         remark_desc: 'Ek notlar ve açıklamalar',
+        timing: 'Zaman Bilgileri',
+        timing_desc: 'Güncelleme zamanı kayıtları',
       },
       helpers: {
         id: 'Sistem tarafından oluşturulan benzersiz tanımlayıcı',
         name: 'Düğümü tanımlamak için 3-50 karakter',
         tags: 'Virgülle ayrılmış birden fazla etiket, en fazla 200 karakter',
         remark: 'İsteğe bağlı not, en fazla 500 karakter',
+      },
+      empty: {
+        title: 'Henüz düğüm yok',
+        description: 'İlk ağ düğümünü eklemek için "Oluştur" düğmesine tıklayın',
+        no_remark: 'Not bilgisi yok',
+      },
+      filter: {
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} düğüm',
       },
     },
     'system/certificate': {
@@ -548,6 +632,7 @@ const customTurkishMessages: TranslationMessages = {
         },
         other: {
           title: 'Diğer Bilgiler',
+          description: 'Oluşturulma ve güncellenme zamanı',
         },
       },
       helpers: {
@@ -577,6 +662,39 @@ const customTurkishMessages: TranslationMessages = {
         realname_required: 'Ad soyad zorunludur',
         level_required: 'Lütfen yetki seviyesini seçin',
         status_required: 'Lütfen durumu seçin',
+      },
+      empty: {
+        title: 'Henüz operatör yok',
+        description: 'İlk operatörü eklemek için "Oluştur" düğmesine tıklayın',
+        no_remark: 'Not bilgisi yok',
+      },
+      filter: {
+        title: 'Filtre Koşulları',
+      },
+      list: {
+        total: 'Toplam %{count} operatör',
+      },
+    },
+    'system/settings': {
+      fields: {
+        type: 'Tür',
+        name: 'Yapılandırma Adı',
+        value: 'Yapılandırma Değeri',
+        sort: 'Sıralama',
+        remark: 'Not',
+        created_at: 'Oluşturulma Zamanı',
+        updated_at: 'Güncellenme Zamanı',
+      },
+      filters: {
+        name: 'Ad',
+      },
+      types: {
+        system: 'Sistem Yapılandırması',
+        radius: 'RADIUS Yapılandırması',
+        security: 'Güvenlik Yapılandırması',
+        network: 'Ağ Yapılandırması',
+        email: 'E-posta Yapılandırması',
+        other: 'Diğer Yapılandırma',
       },
     },
   },
@@ -631,6 +749,10 @@ const customTurkishMessages: TranslationMessages = {
         email_helper: 'Bildirimler ve parola kurtarma için kullanılır',
         remark: 'Not',
       },
+      profile_updated: 'Kullanıcı bilgileri başarıyla güncellendi',
+      profile_update_failed: 'Kullanıcı bilgileri güncellenemedi: %{message}',
+      password_change_failed: 'Parola değiştirilemedi: %{message}',
+      realname_required: 'Ad soyad boş bırakılamaz',
     },
     system_config: {
       title: 'Sistem Yapılandırması',
@@ -694,6 +816,17 @@ const customTurkishMessages: TranslationMessages = {
       available_values: 'Kullanılabilir değerler',
       config_items: 'yapılandırma öğesi',
       cert_select_none: '(yok)',
+      save_failed: 'Yapılandırma kaydedilemedi: %{message}',
+      reset_done: 'Varsayılan değerlere sıfırlandı',
+      nothing_to_save: 'Kaydedilecek yapılandırma öğesi yok',
+      group_default_desc: '%{group} ile ilgili yapılandırma',
+      debug_title: 'Hata ayıklama bilgisi:',
+      debug_schema_count: '- Yapılandırma şeması sayısı: %{count}',
+      debug_value_count: '- Yapılandırma değeri sayısı: %{count}',
+      debug_api_url: '- API adresi: %{url}',
+      debug_console_hint: 'Ayrıntılı günlükler için lütfen tarayıcı konsolunu açın.',
+      reset_note_label: 'Not:',
+      reset_note_text: 'Bu işlem aşağıdaki yapılandırma öğeleri için yaptığınız özel ayarları temizleyecektir:',
     },
   },
   config: {
@@ -823,6 +956,44 @@ const customTurkishMessages: TranslationMessages = {
     yes: 'Evet',
     no: 'Hayır',
     loading: 'Yükleniyor...',
+    no_data: 'Veri yok',
+    unknown: 'Bilinmiyor',
+    unknown_error: 'Bilinmeyen hata',
+    unknown_user: 'Bilinmeyen kullanıcı',
+    unknown_device: 'Bilinmeyen cihaz',
+    unknown_node: 'Bilinmeyen düğüm',
+    unknown_profile: 'Bilinmeyen profil',
+    not_assigned: 'Atanmamış',
+    not_set: 'Ayarlanmamış',
+    not_configured: 'Yapılandırılmamış',
+    not_available: 'Alınamadı',
+    not_recorded: 'Kaydedilmedi',
+    unlimited: 'Sınırsız',
+    ip_not_assigned: 'IP atanmamış',
+    copied_to_clipboard: '%{label} panoya kopyalandı',
+    data_refreshed: 'Veriler yenilendi',
+    print_details: 'Ayrıntıları yazdır',
+    refresh_data: 'Verileri yenile',
+    copy_ip: 'IP adresini kopyala',
+    ip_address: 'IP adresi',
+    copy_session_id: 'Oturum kimliğini kopyala',
+    session_id: 'Oturum kimliği',
+    session_with_id: 'Oturum: %{id}',
+    copy_username: 'Kullanıcı adını kopyala',
+    copy_node_name: 'Düğüm adını kopyala',
+    node_name: 'Düğüm adı',
+    copy_profile_name: 'Profil adını kopyala',
+    profile_name: 'Profil adı',
+    user_id_with_value: 'Kullanıcı Kimliği: %{id}',
+    online: 'Çevrimiçi',
+    offline: 'Çevrimdışı',
+    ended: 'Sona erdi',
+    online_now: 'Şu an çevrimiçi',
+    session_in_progress: 'Oturum devam ediyor',
+    upload_traffic: 'Yükleme Trafiği',
+    download_traffic: 'İndirme Trafiği',
+    packets_count: '%{count} paket',
+    clear: 'Temizle',
   },
   error: {
     connectivity_title: 'Bağlantı Sorunu',

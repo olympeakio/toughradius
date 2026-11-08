@@ -1,5 +1,6 @@
 import { AuthProvider, UserIdentity } from 'react-admin';
 import { clearAuthStorage } from '../utils/storage';
+import { i18nProvider } from '../i18n';
 
 type OperatorUser = {
   id?: string | number;
@@ -137,14 +138,14 @@ export const authProvider: AuthProvider = {
       const result = await response.json();
 
       if (response.status < 200 || response.status >= 300) {
-        const errorMessage = result?.message || result?.error || response.statusText || '登录失败';
+        const errorMessage = result?.message || result?.error || response.statusText || i18nProvider.translate('auth.login_failed', { _: 'Login failed' });
         throw new Error(errorMessage);
       }
 
       const auth = result.data || result;
 
       if (!auth.token) {
-        throw new Error('登录响应中缺少 token');
+        throw new Error(i18nProvider.translate('auth.missing_token', { _: 'Login response is missing a token' }));
       }
 
       localStorage.setItem('token', auth.token);
@@ -180,7 +181,7 @@ export const authProvider: AuthProvider = {
 
     if (status === 401) {
       clearAuthStorage();
-      return Promise.reject({ message: '认证已过期，请重新登录' });
+      return Promise.reject({ message: i18nProvider.translate('auth.session_expired', { _: 'Authentication expired, please log in again' }) });
     }
 
     // 403 表示权限不足，但不需要登出

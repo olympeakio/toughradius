@@ -3,6 +3,14 @@ import englishMessages from 'ra-language-english';
 
 const customEnglishMessages: TranslationMessages = {
   ...englishMessages,
+  ra: {
+    ...englishMessages.ra,
+    action: {
+      ...englishMessages.ra.action,
+      clear_filters: 'Clear filters',
+      actions: 'Actions',
+    },
+  },
   app: {
     title: 'TOUGHRADIUS v9',
     subtitle: 'Enterprise-grade RADIUS Server Management Platform',
@@ -15,6 +23,9 @@ const customEnglishMessages: TranslationMessages = {
     sign_out: 'Sign Out',
     login_error: 'Login failed, please check your username and password',
     welcome: 'Welcome back',
+    login_failed: 'Login failed',
+    missing_token: 'Login response is missing a token',
+    session_expired: 'Authentication expired, please log in again',
   },
   menu: {
     dashboard: 'Dashboard',
@@ -134,6 +145,9 @@ const customEnglishMessages: TranslationMessages = {
         remark_desc: 'Additional notes and comments',
         basic: 'Basic Information',
         time: 'Time Information',
+        basic_desc: 'User authentication information',
+        timing: 'Time Information',
+        timing_desc: 'Created and updated time',
       },
       helpers: {
         id: 'System generated unique identifier',
@@ -152,10 +166,29 @@ const customEnglishMessages: TranslationMessages = {
         radius_class: 'RFC 2865 Class, emitted as-is. For ocserv groups use OU=group1;group2',
         domain: 'Domain name for vendor-specific features (e.g. Huawei domain), e.g. enterprise.example.com',
         remark: 'Optional notes, max 1000 characters',
+        ipv6_prefix_pool: 'Framed-IPv6-Pool pool name (SLAAC stateless address autoconfiguration)',
+        delegated_ipv6_prefix: 'Static Delegated-IPv6-Prefix, e.g. 2001:db8:1234::/48',
+        delegated_ipv6_prefix_pool: 'DHCPv6-PD prefix delegation pool name (RFC 6911 §2.4, distinct from the IPv6 prefix pool)',
+        radius_class_create: 'RFC 2865 Class, emitted as-is in Access-Accept. For ocserv groups use OU=group1;group2; leave blank to inherit from the billing profile',
       },
       empty_text: {
         expire_time: 'Never expire',
         no_remark: 'No remark',
+      },
+      empty: {
+        title: 'No users yet',
+        description: 'Click "Create" to add the first RADIUS user',
+        no_remark: 'No remark',
+      },
+      filter: {
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} users',
+      },
+      expire: {
+        expired_days: 'Expired %{days} days ago',
+        expires_in_days: 'Expires in %{days} days',
       },
     },
     'radius/online': {
@@ -225,6 +258,18 @@ const customEnglishMessages: TranslationMessages = {
         action_error: '%{action} request failed: %{message}',
         unknown_cause: 'unknown cause',
       },
+      empty: {
+        title: 'No online sessions',
+        description: 'No users are currently online',
+      },
+      filter: {
+        start_time_from: 'Start time from',
+        start_time_to: 'Start time to',
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} online sessions',
+      },
     },
     'radius/accounting': {
       name: 'Accounting Record |||| Accounting Records',
@@ -276,6 +321,18 @@ const customEnglishMessages: TranslationMessages = {
         traffic_desc: 'Upload and download traffic statistics during the session.',
         session_details: 'Session Details',
         session_details_desc: 'NAS port and service type details.',
+      },
+      empty: {
+        title: 'No accounting records yet',
+        description: 'Try adjusting the filters or wait for new session records',
+      },
+      filter: {
+        start_time_from: 'Start time from',
+        start_time_to: 'Start time to',
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} records',
       },
     },
     'radius/profiles': {
@@ -347,6 +404,17 @@ const customEnglishMessages: TranslationMessages = {
       units: {
         kbps: 'Kbps',
       },
+      empty: {
+        title: 'No profiles yet',
+        description: 'Click "Create" to add the first billing profile',
+        no_remark: 'No remark',
+      },
+      filter: {
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} profiles',
+      },
     },
     'network/nas': {
       name: 'NAS Device |||| NAS Devices',
@@ -390,6 +458,7 @@ const customEnglishMessages: TranslationMessages = {
         },
         timestamps: {
           title: 'Time Information',
+          description: 'Created and updated time',
         },
       },
       helpers: {
@@ -403,6 +472,16 @@ const customEnglishMessages: TranslationMessages = {
         tags: 'Comma-separated tags, max 200 characters',
         remark: 'Optional remark, max 500 characters',
         no_remark: 'No remark',
+      },
+      empty: {
+        title: 'No NAS devices yet',
+        description: 'Click "Create" to add the first NAS device',
+      },
+      filter: {
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} NAS devices',
       },
     },
     'network/nodes': {
@@ -420,12 +499,25 @@ const customEnglishMessages: TranslationMessages = {
         basic_desc: 'Basic configuration of the node',
         remark: 'Remark',
         remark_desc: 'Additional notes and comments',
+        timing: 'Time Information',
+        timing_desc: 'Update time records',
       },
       helpers: {
         id: 'System generated unique identifier',
         name: '3-50 characters to identify the node',
         tags: 'Multiple tags separated by commas, max 200 characters',
         remark: 'Optional remark, max 500 characters',
+      },
+      empty: {
+        title: 'No nodes yet',
+        description: 'Click "Create" to add the first network node',
+        no_remark: 'No remark',
+      },
+      filter: {
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} nodes',
       },
     },
     'system/certificate': {
@@ -548,6 +640,7 @@ const customEnglishMessages: TranslationMessages = {
         },
         other: {
           title: 'Other Information',
+          description: 'Created and updated time',
         },
       },
       helpers: {
@@ -577,6 +670,39 @@ const customEnglishMessages: TranslationMessages = {
         realname_required: 'Real name is required',
         level_required: 'Please select permission level',
         status_required: 'Please select status',
+      },
+      empty: {
+        title: 'No operators yet',
+        description: 'Click "Create" to add the first operator',
+        no_remark: 'No remark',
+      },
+      filter: {
+        title: 'Filters',
+      },
+      list: {
+        total: 'Total: %{count} operators',
+      },
+    },
+    'system/settings': {
+      fields: {
+        type: 'Type',
+        name: 'Config Name',
+        value: 'Config Value',
+        sort: 'Sort Order',
+        remark: 'Remark',
+        created_at: 'Created At',
+        updated_at: 'Updated At',
+      },
+      filters: {
+        name: 'Name',
+      },
+      types: {
+        system: 'System Configuration',
+        radius: 'RADIUS Configuration',
+        security: 'Security Configuration',
+        network: 'Network Configuration',
+        email: 'Email Configuration',
+        other: 'Other Configuration',
       },
     },
   },
@@ -631,6 +757,10 @@ const customEnglishMessages: TranslationMessages = {
         email_helper: 'Used for notifications and password recovery',
         remark: 'Remark',
       },
+      profile_updated: 'User information updated successfully',
+      profile_update_failed: 'Failed to update user information: %{message}',
+      password_change_failed: 'Failed to change password: %{message}',
+      realname_required: 'Real name cannot be empty',
     },
     system_config: {
       title: 'System Configuration',
@@ -694,6 +824,17 @@ const customEnglishMessages: TranslationMessages = {
       available_values: 'Available values',
       config_items: 'configuration items',
       cert_select_none: '(none)',
+      save_failed: 'Failed to save configuration: %{message}',
+      reset_done: 'Reset to default values',
+      nothing_to_save: 'No configuration items to save',
+      group_default_desc: '%{group} related configuration',
+      debug_title: 'Debug info:',
+      debug_schema_count: '- Config schema count: %{count}',
+      debug_value_count: '- Config value count: %{count}',
+      debug_api_url: '- API URL: %{url}',
+      debug_console_hint: 'Please open the browser console for detailed logs.',
+      reset_note_label: 'Note:',
+      reset_note_text: 'This action will clear your custom settings for the following configuration items:',
     },
   },
   config: {
@@ -823,6 +964,44 @@ const customEnglishMessages: TranslationMessages = {
     yes: 'Yes',
     no: 'No',
     loading: 'Loading...',
+    no_data: 'No data',
+    unknown: 'Unknown',
+    unknown_error: 'Unknown error',
+    unknown_user: 'Unknown user',
+    unknown_device: 'Unknown device',
+    unknown_node: 'Unknown node',
+    unknown_profile: 'Unknown profile',
+    not_assigned: 'Not assigned',
+    not_set: 'Not set',
+    not_configured: 'Not configured',
+    not_available: 'Not available',
+    not_recorded: 'Not recorded',
+    unlimited: 'Unlimited',
+    ip_not_assigned: 'No IP assigned',
+    copied_to_clipboard: '%{label} copied to clipboard',
+    data_refreshed: 'Data refreshed',
+    print_details: 'Print details',
+    refresh_data: 'Refresh data',
+    copy_ip: 'Copy IP address',
+    ip_address: 'IP address',
+    copy_session_id: 'Copy session ID',
+    session_id: 'Session ID',
+    session_with_id: 'Session: %{id}',
+    copy_username: 'Copy username',
+    copy_node_name: 'Copy node name',
+    node_name: 'Node name',
+    copy_profile_name: 'Copy profile name',
+    profile_name: 'Profile name',
+    user_id_with_value: 'User ID: %{id}',
+    online: 'Online',
+    offline: 'Offline',
+    ended: 'Ended',
+    online_now: 'Online now',
+    session_in_progress: 'Session in progress',
+    upload_traffic: 'Upload Traffic',
+    download_traffic: 'Download Traffic',
+    packets_count: '%{count} packets',
+    clear: 'Clear',
   },
   error: {
     connectivity_title: 'Connection Issue',

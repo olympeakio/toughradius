@@ -584,7 +584,7 @@ const ProfileListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 个策略
+            {translate('resources.radius/profiles.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} profiles' })}
           </Typography>
         </Box>
 
@@ -1051,13 +1051,13 @@ const ProfileHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   if (!record) return null;
 
@@ -1114,7 +1114,7 @@ const ProfileHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.name || <EmptyValue message="未知策略" />}
+                  {record.name || <EmptyValue message={translate('common.unknown_profile', { _: 'Unknown profile' })} />}
                 </Typography>
                 <StatusIndicator isEnabled={isEnabled} />
               </Box>
@@ -1123,10 +1123,10 @@ const ProfileHeaderCard = () => {
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
                     ID: {record.id}
                   </Typography>
-                  <Tooltip title="复制策略名称">
+                  <Tooltip title={translate('common.copy_profile_name', { _: 'Copy profile name' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.name!, '策略名称')}
+                      onClick={() => handleCopy(record.name!, translate('common.profile_name', { _: 'Profile name' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -1139,7 +1139,7 @@ const ProfileHeaderCard = () => {
 
           {/* 右侧：操作按钮 */}
           <Box className="no-print" sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -1152,7 +1152,7 @@ const ProfileHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{

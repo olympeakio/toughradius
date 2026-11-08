@@ -120,8 +120,8 @@ const VENDOR_CHOICES = [
 
 // 状态选项
 const STATUS_CHOICES = [
-  { id: 'enabled', name: '启用' },
-  { id: 'disabled', name: '禁用' },
+  { id: 'enabled', name: 'common.enabled' },
+  { id: 'disabled', name: 'common.disabled' },
 ];
 
 // 获取厂商名称
@@ -643,7 +643,7 @@ const NASListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 台 NAS 设备
+            {translate('resources.network/nas.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} NAS devices' })}
           </Typography>
         </Box>
 
@@ -1092,13 +1092,13 @@ const NASHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   if (!record) return null;
 
@@ -1155,7 +1155,7 @@ const NASHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.name || <EmptyValue message="未知设备" />}
+                  {record.name || <EmptyValue message={translate('common.unknown_device', { _: 'Unknown device' })} />}
                 </Typography>
                 <StatusIndicator isEnabled={isEnabled} />
               </Box>
@@ -1168,10 +1168,10 @@ const NASHeaderCard = () => {
                   >
                     {record.ipaddr}
                   </Typography>
-                  <Tooltip title="复制IP地址">
+                  <Tooltip title={translate('common.copy_ip', { _: 'Copy IP address' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.ipaddr!, 'IP地址')}
+                      onClick={() => handleCopy(record.ipaddr!, translate('common.ip_address', { _: 'IP address' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -1184,7 +1184,7 @@ const NASHeaderCard = () => {
 
           {/* 右侧：操作按钮 */}
           <Box className="no-print" sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -1197,7 +1197,7 @@ const NASHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{

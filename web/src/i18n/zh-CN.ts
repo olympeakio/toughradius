@@ -3,6 +3,14 @@ import chineseMessages from 'ra-language-chinese';
 
 const customChineseMessages: TranslationMessages = {
   ...chineseMessages,
+  ra: {
+    ...chineseMessages.ra,
+    action: {
+      ...chineseMessages.ra.action,
+      clear_filters: '清除筛选',
+      actions: '操作',
+    },
+  },
   app: {
     title: 'TOUGHRADIUS v9',
     subtitle: '企业级 RADIUS 服务器管理平台',
@@ -15,6 +23,9 @@ const customChineseMessages: TranslationMessages = {
     sign_out: '退出登录',
     login_error: '登录失败，请检查用户名和密码',
     welcome: '欢迎回来',
+    login_failed: '登录失败',
+    missing_token: '登录响应中缺少 token',
+    session_expired: '认证已过期，请重新登录',
   },
   menu: {
     dashboard: '控制台',
@@ -134,6 +145,9 @@ const customChineseMessages: TranslationMessages = {
         remark_desc: '额外的说明和备注',
         basic: '基本信息',
         time: '时间信息',
+        basic_desc: '用户的身份认证信息',
+        timing: '时间信息',
+        timing_desc: '创建和更新时间',
       },
       helpers: {
         id: '系统自动生成的唯一标识',
@@ -152,10 +166,29 @@ const customChineseMessages: TranslationMessages = {
         radius_class: 'RFC 2865 Class，原样写入 Access-Accept。ocserv 群组请填 OU=group1;group2',
         domain: '域名，用于厂商特定功能（如华为域），如 enterprise.example.com',
         remark: '可选的备注信息，最多1000个字符',
+        ipv6_prefix_pool: 'Framed-IPv6-Pool 池名（SLAAC 无状态地址自动配置）',
+        delegated_ipv6_prefix: '静态 Delegated-IPv6-Prefix，如 2001:db8:1234::/48',
+        delegated_ipv6_prefix_pool: 'DHCPv6-PD 前缀委派池名（RFC 6911 §2.4，与 IPv6 前缀池区分）',
+        radius_class_create: 'RFC 2865 Class，原样写入 Access-Accept。ocserv 群组请填 OU=group1;group2；留空则继承计费策略',
       },
       empty_text: {
         expire_time: '永不过期',
         no_remark: '无备注信息',
+      },
+      empty: {
+        title: '暂无用户',
+        description: '点击"新建"按钮添加第一个RADIUS用户',
+        no_remark: '无备注信息',
+      },
+      filter: {
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 个用户',
+      },
+      expire: {
+        expired_days: '已过期 %{days} 天',
+        expires_in_days: '%{days} 天后过期',
       },
     },
     'radius/online': {
@@ -225,6 +258,18 @@ const customChineseMessages: TranslationMessages = {
         action_error: '%{action}请求失败：%{message}',
         unknown_cause: '未知原因',
       },
+      empty: {
+        title: '暂无在线会话',
+        description: '当前没有用户在线',
+      },
+      filter: {
+        start_time_from: '开始时间从',
+        start_time_to: '开始时间至',
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 个在线会话',
+      },
     },
     'radius/accounting': {
       name: '计费记录 |||| 计费记录',
@@ -276,6 +321,18 @@ const customChineseMessages: TranslationMessages = {
         traffic_desc: '会话期间的上传、下载流量统计。',
         session_details: '会话详情',
         session_details_desc: 'NAS端口和服务类型等详细信息。',
+      },
+      empty: {
+        title: '暂无计费记录',
+        description: '尝试调整筛选条件或等待新的会话记录',
+      },
+      filter: {
+        start_time_from: '开始时间从',
+        start_time_to: '开始时间至',
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 条记录',
       },
     },
     'radius/profiles': {
@@ -347,6 +404,17 @@ const customChineseMessages: TranslationMessages = {
       units: {
         kbps: 'Kbps',
       },
+      empty: {
+        title: '暂无策略',
+        description: '点击"新建"按钮添加第一个计费策略',
+        no_remark: '无备注信息',
+      },
+      filter: {
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 个策略',
+      },
     },
     'network/nas': {
       name: 'NAS设备 |||| NAS设备',
@@ -390,6 +458,7 @@ const customChineseMessages: TranslationMessages = {
         },
         timestamps: {
           title: '时间信息',
+          description: '创建和更新时间',
         },
       },
       helpers: {
@@ -403,6 +472,16 @@ const customChineseMessages: TranslationMessages = {
         tags: '多个标签用逗号分隔，最多200个字符',
         remark: '可选的备注信息，最多500个字符',
         no_remark: '无备注信息',
+      },
+      empty: {
+        title: '暂无 NAS 设备',
+        description: '点击"新建"按钮添加第一个 NAS 设备',
+      },
+      filter: {
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 台 NAS 设备',
       },
     },
     'network/nodes': {
@@ -420,12 +499,25 @@ const customChineseMessages: TranslationMessages = {
         basic_desc: '节点的基本配置信息',
         remark: '备注信息',
         remark_desc: '额外的说明和备注',
+        timing: '时间信息',
+        timing_desc: '更新时间记录',
       },
       helpers: {
         id: '系统自动生成的唯一标识',
         name: '3-50个字符，用于标识节点',
         tags: '多个标签用逗号分隔，最多200个字符',
         remark: '可选的备注信息，最多500个字符',
+      },
+      empty: {
+        title: '暂无节点',
+        description: '点击"新建"按钮添加第一个网络节点',
+        no_remark: '无备注信息',
+      },
+      filter: {
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 个节点',
       },
     },
     'system/certificate': {
@@ -548,6 +640,7 @@ const customChineseMessages: TranslationMessages = {
         },
         other: {
           title: '其他信息',
+          description: '创建和更新时间',
         },
       },
       helpers: {
@@ -577,6 +670,39 @@ const customChineseMessages: TranslationMessages = {
         realname_required: '真实姓名不能为空',
         level_required: '请选择权限级别',
         status_required: '请选择状态',
+      },
+      empty: {
+        title: '暂无操作员',
+        description: '点击"新建"按钮添加第一个操作员',
+        no_remark: '无备注信息',
+      },
+      filter: {
+        title: '筛选条件',
+      },
+      list: {
+        total: '共 %{count} 个操作员',
+      },
+    },
+    'system/settings': {
+      fields: {
+        type: '类型',
+        name: '配置名称',
+        value: '配置值',
+        sort: '排序',
+        remark: '备注',
+        created_at: '创建时间',
+        updated_at: '更新时间',
+      },
+      filters: {
+        name: '名称',
+      },
+      types: {
+        system: '系统配置',
+        radius: 'RADIUS配置',
+        security: '安全配置',
+        network: '网络配置',
+        email: '邮件配置',
+        other: '其他配置',
       },
     },
   },
@@ -631,6 +757,10 @@ const customChineseMessages: TranslationMessages = {
         email_helper: '用于接收通知和找回密码',
         remark: '备注',
       },
+      profile_updated: '用户信息更新成功',
+      profile_update_failed: '更新用户信息失败: %{message}',
+      password_change_failed: '密码修改失败: %{message}',
+      realname_required: '真实姓名不能为空',
     },
     system_config: {
       title: '系统配置',
@@ -694,6 +824,17 @@ const customChineseMessages: TranslationMessages = {
       available_values: '可选值',
       config_items: '项配置',
       cert_select_none: '（未选择）',
+      save_failed: '配置保存失败: %{message}',
+      reset_done: '已重置为默认值',
+      nothing_to_save: '暂无可保存的配置项',
+      group_default_desc: '%{group} 相关配置',
+      debug_title: '调试信息：',
+      debug_schema_count: '- 配置schema数量：%{count}',
+      debug_value_count: '- 配置值数量：%{count}',
+      debug_api_url: '- API地址：%{url}',
+      debug_console_hint: '请打开浏览器控制台查看详细日志。',
+      reset_note_label: '注意：',
+      reset_note_text: '此操作将清除您对以下配置项的自定义设置：',
     },
   },
   config: {
@@ -823,6 +964,44 @@ const customChineseMessages: TranslationMessages = {
     yes: '是',
     no: '否',
     loading: '加载中...',
+    no_data: '暂无数据',
+    unknown: '未知',
+    unknown_error: '未知错误',
+    unknown_user: '未知用户',
+    unknown_device: '未知设备',
+    unknown_node: '未知节点',
+    unknown_profile: '未知策略',
+    not_assigned: '未分配',
+    not_set: '未设置',
+    not_configured: '未配置',
+    not_available: '未获取',
+    not_recorded: '未记录',
+    unlimited: '无限制',
+    ip_not_assigned: '未分配 IP',
+    copied_to_clipboard: '%{label} 已复制到剪贴板',
+    data_refreshed: '数据已刷新',
+    print_details: '打印详情',
+    refresh_data: '刷新数据',
+    copy_ip: '复制 IP 地址',
+    ip_address: 'IP 地址',
+    copy_session_id: '复制会话 ID',
+    session_id: '会话 ID',
+    session_with_id: '会话: %{id}',
+    copy_username: '复制用户名',
+    copy_node_name: '复制节点名称',
+    node_name: '节点名称',
+    copy_profile_name: '复制策略名称',
+    profile_name: '策略名称',
+    user_id_with_value: '用户ID: %{id}',
+    online: '在线',
+    offline: '离线',
+    ended: '已结束',
+    online_now: '在线中',
+    session_in_progress: '会话进行中',
+    upload_traffic: '上传流量',
+    download_traffic: '下载流量',
+    packets_count: '%{count} 包',
+    clear: '清除',
   },
   error: {
     connectivity_title: '连接问题',

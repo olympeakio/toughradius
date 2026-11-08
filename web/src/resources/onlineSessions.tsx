@@ -428,22 +428,25 @@ interface EmptyStateProps {
   message?: string;
 }
 
-const EmptyValue = ({ message = '暂无数据' }: EmptyStateProps) => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 0.5,
-      color: 'text.disabled',
-      fontStyle: 'italic',
-      fontSize: '0.85rem',
-    }}
-  >
-    <Typography variant="body2" sx={{ opacity: 0.6 }}>
-      {message}
-    </Typography>
-  </Box>
-);
+const EmptyValue = ({ message }: EmptyStateProps) => {
+  const translate = useTranslate();
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        color: 'text.disabled',
+        fontStyle: 'italic',
+        fontSize: '0.85rem',
+      }}
+    >
+      <Typography variant="body2" sx={{ opacity: 0.6 }}>
+        {message ?? translate('common.no_data', { _: 'No data' })}
+      </Typography>
+    </Box>
+  );
+};
 
 // 顶部概览卡片
 const SessionHeaderCard = () => {
@@ -461,13 +464,13 @@ const SessionHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   // notifyActionResult turns a CoaActionResult into a localized toast. An ACK is a
   // success; a timeout is a warning (request sent, NAS silent); an explicit NAK is
@@ -655,11 +658,11 @@ const SessionHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.username || <EmptyValue message="未知用户" />}
+                  {record.username || <EmptyValue message={translate('common.unknown_user', { _: 'Unknown user' })} />}
                 </Typography>
                 <Chip
                   icon={<OnlineIcon sx={{ fontSize: '1rem !important' }} />}
-                  label="在线"
+                  label={translate('common.online', { _: 'Online' })}
                   size="small"
                   color="success"
                   sx={{ fontWeight: 600, height: 24 }}
@@ -667,13 +670,13 @@ const SessionHeaderCard = () => {
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" color="text.secondary">
-                  {record.framed_ipaddr || '未分配 IP'}
+                  {record.framed_ipaddr || translate('common.ip_not_assigned', { _: 'No IP assigned' })}
                 </Typography>
                 {record.framed_ipaddr && (
-                  <Tooltip title="复制 IP 地址">
+                  <Tooltip title={translate('common.copy_ip', { _: 'Copy IP address' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.framed_ipaddr!, 'IP 地址')}
+                      onClick={() => handleCopy(record.framed_ipaddr!, translate('common.ip_address', { _: 'IP address' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.9rem' }} />
@@ -684,12 +687,12 @@ const SessionHeaderCard = () => {
               {record.acct_session_id && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                    会话: {record.acct_session_id}
+                    {translate('common.session_with_id', { id: record.acct_session_id, _: 'Session: %{id}' })}
                   </Typography>
-                  <Tooltip title="复制会话 ID">
+                  <Tooltip title={translate('common.copy_session_id', { _: 'Copy session ID' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.acct_session_id!, '会话 ID')}
+                      onClick={() => handleCopy(record.acct_session_id!, translate('common.session_id', { _: 'Session ID' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -732,7 +735,7 @@ const SessionHeaderCard = () => {
                 <DisconnectIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -745,7 +748,7 @@ const SessionHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{
@@ -786,7 +789,7 @@ const SessionHeaderCard = () => {
             <DialogContentText>
               {translate('resources.radius/online.dialog.disconnect_content', {
                 _: '确定要强制下线用户 "{username}" 吗？此操作将断开用户的网络连接。',
-                username: record.username || '未知用户',
+                username: record.username || translate('common.unknown_user', { _: 'Unknown user' }),
               })}
             </DialogContentText>
           </DialogContent>
@@ -825,7 +828,7 @@ const SessionHeaderCard = () => {
             <DialogContentText sx={{ mb: 2 }}>
               {translate('resources.radius/online.dialog.coa_content', {
                 _: '向 NAS 发送 RFC 5176 CoA 请求以更新用户 "%{username}" 的会话授权，仅填写需要变更的字段。',
-                username: record.username || '未知用户',
+                username: record.username || translate('common.unknown_user', { _: 'Unknown user' }),
               })}
             </DialogContentText>
             <Stack spacing={2} sx={{ mt: 1 }}>
@@ -1051,7 +1054,7 @@ const OnlineSessionDetails = () => {
                     sx={{ fontFamily: 'monospace' }}
                   />
                 ) : (
-                  <EmptyValue message="未分配" />
+                  <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                 )
               }
               highlight
@@ -1062,15 +1065,15 @@ const OnlineSessionDetails = () => {
             />
             <DetailItem
               label={translate('resources.radius/online.fields.framed_ipv6_address')}
-              value={record.framed_ipv6_address || <EmptyValue message="未配置" />}
+              value={record.framed_ipv6_address || <EmptyValue message={translate('common.not_configured', { _: 'Not configured' })} />}
             />
             <DetailItem
               label={translate('resources.radius/online.fields.framed_ipv6_prefix')}
-              value={record.framed_ipv6_prefix || <EmptyValue message="未配置" />}
+              value={record.framed_ipv6_prefix || <EmptyValue message={translate('common.not_configured', { _: 'Not configured' })} />}
             />
             <DetailItem
               label={translate('resources.radius/online.fields.delegated_ipv6_prefix')}
-              value={record.delegated_ipv6_prefix || <EmptyValue message="未配置" />}
+              value={record.delegated_ipv6_prefix || <EmptyValue message={translate('common.not_configured', { _: 'Not configured' })} />}
             />
             <DetailItem
               label={translate('resources.radius/online.fields.mac_addr')}
@@ -1083,7 +1086,7 @@ const OnlineSessionDetails = () => {
                     sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}
                   />
                 ) : (
-                  <EmptyValue message="未获取" />
+                  <EmptyValue message={translate('common.not_available', { _: 'Not available' })} />
                 )
               }
             />
@@ -1176,7 +1179,7 @@ const OnlineSessionDetails = () => {
               value={
                 record.session_timeout !== undefined && record.session_timeout !== null
                   ? `${record.session_timeout}s`
-                  : <EmptyValue message="无限制" />
+                  : <EmptyValue message={translate('common.unlimited', { _: 'Unlimited' })} />
               }
             />
           </Box>
@@ -1204,21 +1207,21 @@ const OnlineSessionDetails = () => {
                 value={formatBytes(getInputTraffic(record))}
                 icon={<UploadIcon />}
                 color="info"
-                subValue={`${record.acct_input_packets?.toLocaleString() ?? 0} 包`}
+                subValue={translate('common.packets_count', { count: record.acct_input_packets?.toLocaleString() ?? 0, _: '%{count} packets' })}
               />
               <TrafficStat
                 label={translate('resources.radius/online.fields.acct_output_octets')}
                 value={formatBytes(getOutputTraffic(record))}
                 icon={<DownloadIcon />}
                 color="warning"
-                subValue={`${record.acct_output_packets?.toLocaleString() ?? 0} 包`}
+                subValue={translate('common.packets_count', { count: record.acct_output_packets?.toLocaleString() ?? 0, _: '%{count} packets' })}
               />
               <TrafficStat
                 label={translate('resources.radius/online.fields.total_traffic')}
                 value={formatBytes(totalTraffic)}
                 icon={<SpeedIcon />}
                 color="success"
-                subValue={`${((record.acct_input_packets ?? 0) + (record.acct_output_packets ?? 0)).toLocaleString()} 包`}
+                subValue={translate('common.packets_count', { count: ((record.acct_input_packets ?? 0) + (record.acct_output_packets ?? 0)).toLocaleString(), _: '%{count} packets' })}
               />
             </Box>
           </Box>
@@ -1553,6 +1556,7 @@ const SearchHeaderCard = () => {
 
 const UsernameField = () => {
   const record = useRecordContext<OnlineSession>();
+  const translate = useTranslate();
   if (!record) return null;
 
   return (
@@ -1577,7 +1581,7 @@ const UsernameField = () => {
         </Typography>
         <Chip
           icon={<OnlineIcon sx={{ fontSize: '0.85rem !important' }} />}
-          label="在线"
+          label={translate('common.online', { _: 'Online' })}
           size="small"
           color="success"
           sx={{ height: 20, fontWeight: 500, fontSize: '0.7rem' }}
@@ -1735,7 +1739,7 @@ const OnlineSessionListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 个在线会话
+            {translate('resources.radius/online.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} online sessions' })}
           </Typography>
         </Box>
 

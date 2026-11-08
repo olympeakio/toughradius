@@ -15,6 +15,7 @@ import {
   useListContext,
   SortButton,
   RaRecord,
+  type TranslateFunction,
 } from 'react-admin';
 import {
   Box,
@@ -385,26 +386,29 @@ interface EmptyStateProps {
   message?: string;
 }
 
-const EmptyValue = ({ message = '暂无数据' }: EmptyStateProps) => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 0.5,
-      color: 'text.disabled',
-      fontStyle: 'italic',
-      fontSize: '0.85rem',
-    }}
-  >
-    <Typography variant="body2" sx={{ opacity: 0.6 }}>
-      {message}
-    </Typography>
-  </Box>
-);
+const EmptyValue = ({ message }: EmptyStateProps) => {
+  const translate = useTranslate();
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        color: 'text.disabled',
+        fontStyle: 'italic',
+        fontSize: '0.85rem',
+      }}
+    >
+      <Typography variant="body2" sx={{ opacity: 0.6 }}>
+        {message ?? translate('common.no_data', { _: 'No data' })}
+      </Typography>
+    </Box>
+  );
+};
 
 // 获取终止原因的颜色和图标
-const getTerminateCauseInfo = (cause?: string) => {
-  if (!cause) return { color: 'default' as const, icon: null, label: '未知' };
+const getTerminateCauseInfo = (cause: string | undefined, translate: TranslateFunction) => {
+  if (!cause) return { color: 'default' as const, icon: null, label: translate('common.unknown', { _: 'Unknown' }) };
   
   const normalCauses = ['User-Request', 'Session-Timeout', 'Idle-Timeout'];
   const errorCauses = ['Admin-Reset', 'Lost-Carrier', 'Port-Error', 'NAS-Error'];
@@ -427,19 +431,19 @@ const AccountingHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   if (!record) return null;
 
   const isOnline = !record.acct_stop_time;
   const totalTraffic = sumNumberish(record.acct_input_total, record.acct_output_total);
-  const terminateInfo = getTerminateCauseInfo(record.acct_terminate_cause);
+  const terminateInfo = getTerminateCauseInfo(record.acct_terminate_cause, translate);
 
   return (
     <Card
@@ -492,12 +496,12 @@ const AccountingHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.username || <EmptyValue message="未知用户" />}
+                  {record.username || <EmptyValue message={translate('common.unknown_user', { _: 'Unknown user' })} />}
                 </Typography>
                 {isOnline ? (
                   <Chip
                     icon={<OnlineIcon sx={{ fontSize: '1rem !important' }} />}
-                    label="在线"
+                    label={translate('common.online', { _: 'Online' })}
                     size="small"
                     color="success"
                     sx={{ fontWeight: 600, height: 24 }}
@@ -505,7 +509,7 @@ const AccountingHeaderCard = () => {
                 ) : (
                   <Chip
                     icon={<OfflineIcon sx={{ fontSize: '1rem !important' }} />}
-                    label="已结束"
+                    label={translate('common.ended', { _: 'Ended' })}
                     size="small"
                     color="default"
                     variant="outlined"
@@ -515,13 +519,13 @@ const AccountingHeaderCard = () => {
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" color="text.secondary">
-                  {record.framed_ipaddr || '未分配 IP'}
+                  {record.framed_ipaddr || translate('common.ip_not_assigned', { _: 'No IP assigned' })}
                 </Typography>
                 {record.framed_ipaddr && (
-                  <Tooltip title="复制 IP 地址">
+                  <Tooltip title={translate('common.copy_ip', { _: 'Copy IP address' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.framed_ipaddr!, 'IP 地址')}
+                      onClick={() => handleCopy(record.framed_ipaddr!, translate('common.ip_address', { _: 'IP address' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.9rem' }} />
@@ -532,12 +536,12 @@ const AccountingHeaderCard = () => {
               {record.acct_session_id && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                    会话: {record.acct_session_id}
+                    {translate('common.session_with_id', { id: record.acct_session_id, _: 'Session: %{id}' })}
                   </Typography>
-                  <Tooltip title="复制会话 ID">
+                  <Tooltip title={translate('common.copy_session_id', { _: 'Copy session ID' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.acct_session_id!, '会话 ID')}
+                      onClick={() => handleCopy(record.acct_session_id!, translate('common.session_id', { _: 'Session ID' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -550,7 +554,7 @@ const AccountingHeaderCard = () => {
 
           {/* 右侧：操作按钮 */}
           <Box className="no-print" sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -563,7 +567,7 @@ const AccountingHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{
@@ -632,7 +636,7 @@ const AccountingHeaderCard = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <UploadIcon sx={{ fontSize: '1.1rem', color: 'info.main' }} />
               <Typography variant="caption" color="text.secondary">
-                上传流量
+                {translate('common.upload_traffic', { _: 'Upload Traffic' })}
               </Typography>
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'info.main' }}>
@@ -651,7 +655,7 @@ const AccountingHeaderCard = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <DownloadIcon sx={{ fontSize: '1.1rem', color: 'warning.main' }} />
               <Typography variant="caption" color="text.secondary">
-                下载流量
+                {translate('common.download_traffic', { _: 'Download Traffic' })}
               </Typography>
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
@@ -670,7 +674,7 @@ const AccountingHeaderCard = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <SpeedIcon sx={{ fontSize: '1.1rem', color: 'success.main' }} />
               <Typography variant="caption" color="text.secondary">
-                总流量
+                {translate('resources.radius/accounting.fields.total_traffic', { _: 'Total Traffic' })}
               </Typography>
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
@@ -690,7 +694,7 @@ const AccountingHeaderCard = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 {terminateInfo.icon || <InfoIcon sx={{ fontSize: '1.1rem', color: `${terminateInfo.color}.main` }} />}
                 <Typography variant="caption" color="text.secondary">
-                  终止原因
+                  {translate('resources.radius/accounting.fields.acct_terminate_cause', { _: 'Terminate Cause' })}
                 </Typography>
               </Box>
               <Chip
@@ -777,7 +781,7 @@ const AccountingDetails = () => {
                     sx={{ fontFamily: 'monospace' }}
                   />
                 ) : (
-                  <EmptyValue message="未分配" />
+                  <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                 )
               }
               highlight
@@ -797,21 +801,21 @@ const AccountingDetails = () => {
                     sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}
                   />
                 ) : (
-                  <EmptyValue message="未获取" />
+                  <EmptyValue message={translate('common.not_available', { _: 'Not available' })} />
                 )
               }
             />
             <DetailItem
               label={translate('resources.radius/accounting.fields.framed_ipv6_address')}
-              value={record.framed_ipv6_address || <EmptyValue message="未配置" />}
+              value={record.framed_ipv6_address || <EmptyValue message={translate('common.not_configured', { _: 'Not configured' })} />}
             />
             <DetailItem
               label={translate('resources.radius/accounting.fields.framed_ipv6_prefix')}
-              value={record.framed_ipv6_prefix || <EmptyValue message="未配置" />}
+              value={record.framed_ipv6_prefix || <EmptyValue message={translate('common.not_configured', { _: 'Not configured' })} />}
             />
             <DetailItem
               label={translate('resources.radius/accounting.fields.delegated_ipv6_prefix')}
-              value={record.delegated_ipv6_prefix || <EmptyValue message="未配置" />}
+              value={record.delegated_ipv6_prefix || <EmptyValue message={translate('common.not_configured', { _: 'Not configured' })} />}
             />
           </Box>
         </DetailSectionCard>
@@ -903,7 +907,7 @@ const AccountingDetails = () => {
                 ) : (
                   <Chip
                     icon={<OnlineIcon sx={{ fontSize: '0.9rem !important' }} />}
-                    label="在线中"
+                    label={translate('common.online_now', { _: 'Online now' })}
                     size="small"
                     color="success"
                     sx={{ fontWeight: 600 }}
@@ -929,7 +933,7 @@ const AccountingDetails = () => {
               value={
                 record.session_timeout !== undefined && record.session_timeout !== null
                   ? `${record.session_timeout}s`
-                  : <EmptyValue message="无限制" />
+                  : <EmptyValue message={translate('common.unlimited', { _: 'Unlimited' })} />
               }
             />
             <DetailItem
@@ -961,21 +965,21 @@ const AccountingDetails = () => {
                 value={formatBytes(record.acct_input_total)}
                 icon={<UploadIcon />}
                 color="info"
-                subValue={`${record.acct_input_packets?.toLocaleString() ?? 0} 包`}
+                subValue={translate('common.packets_count', { count: record.acct_input_packets?.toLocaleString() ?? 0, _: '%{count} packets' })}
               />
               <TrafficStat
                 label={translate('resources.radius/accounting.fields.acct_output_total')}
                 value={formatBytes(record.acct_output_total)}
                 icon={<DownloadIcon />}
                 color="warning"
-                subValue={`${record.acct_output_packets?.toLocaleString() ?? 0} 包`}
+                subValue={translate('common.packets_count', { count: record.acct_output_packets?.toLocaleString() ?? 0, _: '%{count} packets' })}
               />
               <TrafficStat
                 label={translate('resources.radius/accounting.fields.total_traffic')}
                 value={formatBytes(totalTraffic)}
                 icon={<SpeedIcon />}
                 color="success"
-                subValue={`${((record.acct_input_packets ?? 0) + (record.acct_output_packets ?? 0)).toLocaleString()} 包`}
+                subValue={translate('common.packets_count', { count: ((record.acct_input_packets ?? 0) + (record.acct_output_packets ?? 0)).toLocaleString(), _: '%{count} packets' })}
               />
             </Box>
           </Box>
@@ -1016,7 +1020,7 @@ const AccountingDetails = () => {
               value={
                 record.acct_terminate_cause ? (
                   (() => {
-                    const info = getTerminateCauseInfo(record.acct_terminate_cause);
+                    const info = getTerminateCauseInfo(record.acct_terminate_cause, translate);
                     return (
                       <Chip
                         icon={info.icon || undefined}
@@ -1031,13 +1035,13 @@ const AccountingDetails = () => {
                   isOnline ? (
                     <Chip
                       icon={<OnlineIcon sx={{ fontSize: '0.9rem !important' }} />}
-                      label="会话进行中"
+                      label={translate('common.session_in_progress', { _: 'Session in progress' })}
                       size="small"
                       color="success"
                       variant="outlined"
                     />
                   ) : (
-                    <EmptyValue message="未记录" />
+                    <EmptyValue message={translate('common.not_recorded', { _: 'Not recorded' })} />
                   )
                 )
               }
@@ -1371,16 +1375,19 @@ const SearchHeaderCard = () => {
 
 // ============ 状态指示器组件 ============
 
-const StatusIndicator = ({ isOnline }: { isOnline: boolean }) => (
-  <Chip
-    icon={isOnline ? <OnlineIcon sx={{ fontSize: '0.85rem !important' }} /> : <OfflineIcon sx={{ fontSize: '0.85rem !important' }} />}
-    label={isOnline ? '在线' : '离线'}
-    size="small"
-    color={isOnline ? 'success' : 'default'}
-    variant={isOnline ? 'filled' : 'outlined'}
-    sx={{ height: 22, fontWeight: 500, fontSize: '0.75rem' }}
-  />
-);
+const StatusIndicator = ({ isOnline }: { isOnline: boolean }) => {
+  const translate = useTranslate();
+  return (
+    <Chip
+      icon={isOnline ? <OnlineIcon sx={{ fontSize: '0.85rem !important' }} /> : <OfflineIcon sx={{ fontSize: '0.85rem !important' }} />}
+      label={isOnline ? translate('common.online', { _: 'Online' }) : translate('common.offline', { _: 'Offline' })}
+      size="small"
+      color={isOnline ? 'success' : 'default'}
+      variant={isOnline ? 'filled' : 'outlined'}
+      sx={{ height: 22, fontWeight: 500, fontSize: '0.75rem' }}
+    />
+  );
+};
 
 // ============ 增强版 Datagrid 字段组件 ============
 
@@ -1564,7 +1571,7 @@ const AccountingListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 条记录
+            {translate('resources.radius/accounting.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} records' })}
           </Typography>
         </Box>
 

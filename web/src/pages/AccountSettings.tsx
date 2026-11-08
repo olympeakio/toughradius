@@ -108,7 +108,7 @@ export default function AccountSettings() {
 
   const handleAuthError = (error: unknown) => {
     if (error instanceof ApiError && error.status === 401) {
-      notify('认证已过期，请重新登录', { type: 'error' });
+      notify(translate('auth.session_expired', { _: 'Authentication expired, please log in again' }), { type: 'error' });
       clearAuthStorage();
       window.location.href = '/login';
       return true;
@@ -172,35 +172,35 @@ export default function AccountSettings() {
       }
       queryClient.setQueryData(ACCOUNT_QUERY_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['auth', 'getIdentity'] });
-      notify('用户信息更新成功');
+      notify(translate('pages.account_settings.profile_updated', { _: 'User information updated successfully' }));
     },
     onError: error => {
       if (handleAuthError(error)) {
         return;
       }
-      const message = error instanceof Error ? error.message : '未知错误';
-      notify(`更新用户信息失败: ${message}`, { type: 'error' });
+      const message = error instanceof Error ? error.message : translate('common.unknown_error', { _: 'Unknown error' });
+      notify(translate('pages.account_settings.profile_update_failed', { message, _: 'Failed to update user information: %{message}' }), { type: 'error' });
     },
   });
 
   const passwordMutation = useApiMutation<{ message?: string }>({
     onSuccess: () => {
-      notify('密码修改成功');
+      notify(translate('pages.account_settings.password_changed', { _: 'Password changed successfully' }));
       setPasswordForm({ newPassword: '', confirmPassword: '' });
     },
     onError: error => {
       if (handleAuthError(error)) {
         return;
       }
-      const message = error instanceof Error ? error.message : '未知错误';
-      notify(`密码修改失败: ${message}`, { type: 'error' });
+      const message = error instanceof Error ? error.message : translate('common.unknown_error', { _: 'Unknown error' });
+      notify(translate('pages.account_settings.password_change_failed', { message, _: 'Failed to change password: %{message}' }), { type: 'error' });
     },
   });
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profileForm.realname || !profileForm.realname.trim()) {
-      notify('真实姓名不能为空', { type: 'error' });
+      notify(translate('pages.account_settings.realname_required', { _: 'Real name cannot be empty' }), { type: 'error' });
       return;
     }
     const requestData: Record<string, string> = {
@@ -231,12 +231,12 @@ export default function AccountSettings() {
     e.preventDefault();
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      notify('新密码和确认密码不一致', { type: 'error' });
+      notify(translate('pages.account_settings.password_mismatch', { _: 'Passwords do not match' }), { type: 'error' });
       return;
     }
 
     if (passwordForm.newPassword.length < 6) {
-      notify('新密码长度至少6位', { type: 'error' });
+      notify(translate('pages.account_settings.password_length_error', { _: 'Password must be at least 6 characters' }), { type: 'error' });
       return;
     }
 

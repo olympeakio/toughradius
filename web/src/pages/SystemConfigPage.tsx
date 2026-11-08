@@ -376,12 +376,12 @@ export const SystemConfigPage: React.FC = () => {
       );
     },
     onSuccess: () => {
-      notify('配置保存成功', { type: 'success' });
+      notify(translate('pages.system_config.saved', { _: 'Configuration saved successfully' }), { type: 'success' });
       queryClient.invalidateQueries({ queryKey: SETTINGS_QUERY_KEY });
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'unknown error';
-      notify(`配置保存失败: ${message}`, { type: 'error' });
+      const message = error instanceof Error ? error.message : translate('common.unknown_error', { _: 'Unknown error' });
+      notify(translate('pages.system_config.save_failed', { message, _: 'Failed to save configuration: %{message}' }), { type: 'error' });
     },
   });
 
@@ -401,7 +401,7 @@ export const SystemConfigPage: React.FC = () => {
     });
     setConfigs(nextConfigs);
     setResetDialogOpen(false);
-    notify('已重置为默认值', { type: 'info' });
+    notify(translate('pages.system_config.reset_done', { _: 'Reset to default values' }), { type: 'info' });
   };
 
   const handleGroupToggle = (group: string) => {
@@ -504,7 +504,7 @@ export const SystemConfigPage: React.FC = () => {
 
   const handleSave = () => {
     if (!schemaQuery.data?.length) {
-      notify('暂无可保存的配置项', { type: 'warning' });
+      notify(translate('pages.system_config.nothing_to_save', { _: 'No configuration items to save' }), { type: 'warning' });
       return;
     }
     saveMutation.mutate({ ...configs });
@@ -586,7 +586,7 @@ export const SystemConfigPage: React.FC = () => {
           {orderedGroupEntries.map(([groupKey, groupSchemas]) => {
           const groupConfig = configGroups[groupKey as keyof typeof configGroups] || {
             title: groupKey,
-            description: `${groupKey} 相关配置`,
+            description: translate('pages.system_config.group_default_desc', { group: groupKey, _: '%{group} related configuration' }),
             icon: <SettingsIcon />,
             color: '#666',
           };
@@ -681,15 +681,15 @@ export const SystemConfigPage: React.FC = () => {
         <Alert severity="warning">
           {translate('pages.system_config.no_config_warning')}
           <br />
-          <strong>调试信息：</strong>
+          <strong>{translate('pages.system_config.debug_title', { _: 'Debug info:' })}</strong>
           <br />
-          - 配置schema数量：{schemaQuery.data?.length ?? 0}
+          {translate('pages.system_config.debug_schema_count', { count: schemaQuery.data?.length ?? 0, _: '- Config schema count: %{count}' })}
           <br />
-          - 配置值数量：{Object.keys(configs).length}
+          {translate('pages.system_config.debug_value_count', { count: Object.keys(configs).length, _: '- Config value count: %{count}' })}
           <br />
-          - API地址：/api/v1/system/config/schemas
+          {translate('pages.system_config.debug_api_url', { url: '/api/v1/system/config/schemas', _: '- API URL: %{url}' })}
           <br />
-          请打开浏览器控制台查看详细日志。
+          {translate('pages.system_config.debug_console_hint', { _: 'Please open the browser console for detailed logs.' })}
         </Alert>
       )}
 
@@ -714,7 +714,7 @@ export const SystemConfigPage: React.FC = () => {
           {translate('pages.system_config.reset_warning')}
           <br />
           <br />
-          <strong>注意：</strong>此操作将清除您对以下配置项的自定义设置：
+          <strong>{translate('pages.system_config.reset_note_label', { _: 'Note:' })}</strong>{translate('pages.system_config.reset_note_text', { _: 'This action will clear your custom settings for the following configuration items:' })}
           <br />
           {schemaQuery.data?.map(schema => (
             <span key={schema.key}>

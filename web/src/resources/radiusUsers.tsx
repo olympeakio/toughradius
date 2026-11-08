@@ -34,7 +34,8 @@ import {
   SortButton,
   Button,
   RaRecord,
-  FunctionField
+  FunctionField,
+  type TranslateFunction,
 } from 'react-admin';
 import {
   Box,
@@ -119,24 +120,24 @@ const formatTimestamp = (value?: string | number): string => {
   return date.toLocaleString();
 };
 
-const formatExpireTime = (expireTime?: string): { text: string; color: 'success' | 'warning' | 'error' | 'default' } => {
+const formatExpireTime = (expireTime: string | undefined, translate: TranslateFunction): { text: string; color: 'success' | 'warning' | 'error' | 'default' } => {
   if (!expireTime) {
-    return { text: '永不过期', color: 'success' };
+    return { text: translate('resources.radius/users.empty_text.expire_time', { _: 'Never expire' }), color: 'success' };
   }
   const expireDate = new Date(expireTime);
   // Year 1 is the stored "never expires" sentinel, not a real calendar date.
   if (Number.isNaN(expireDate.getTime()) || expireDate.getFullYear() < 2) {
-    return { text: '永不过期', color: 'success' };
+    return { text: translate('resources.radius/users.empty_text.expire_time', { _: 'Never expire' }), color: 'success' };
   }
   const now = new Date();
   const diffDays = Math.ceil((expireDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   
   if (diffDays < 0) {
-    return { text: `已过期 ${Math.abs(diffDays)} 天`, color: 'error' };
+    return { text: translate('resources.radius/users.expire.expired_days', { days: Math.abs(diffDays), _: 'Expired %{days} days ago' }), color: 'error' };
   } else if (diffDays <= 7) {
-    return { text: `${diffDays} 天后过期`, color: 'warning' };
+    return { text: translate('resources.radius/users.expire.expires_in_days', { days: diffDays, _: 'Expires in %{days} days' }), color: 'warning' };
   } else if (diffDays <= 30) {
-    return { text: `${diffDays} 天后过期`, color: 'default' };
+    return { text: translate('resources.radius/users.expire.expires_in_days', { days: diffDays, _: 'Expires in %{days} days' }), color: 'default' };
   }
   return { text: expireDate.toLocaleDateString(), color: 'success' };
 };
@@ -174,13 +175,14 @@ const parseExpireFromInput = (value: unknown): string => {
 
 const ExpireTimeInput = () => {
   const { setValue } = useFormContext();
+  const translate = useTranslate();
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <DateTimeInput
           source="expire_time"
-          label="过期时间"
-          helperText="用户服务到期时间，留空表示永不过期"
+          label={translate('resources.radius/users.fields.expire_time', { _: 'Expire Time' })}
+          helperText={translate('resources.radius/users.helpers.expire_time', { _: 'User service expiration time, leave blank for never expires' })}
           format={formatExpireForInput}
           parse={parseExpireFromInput}
           fullWidth
@@ -195,7 +197,7 @@ const ExpireTimeInput = () => {
         sx={{ mt: 1, flexShrink: 0 }}
         onClick={() => setValue('expire_time', '', { shouldDirty: true, shouldTouch: true })}
       >
-        清除
+        {translate('common.clear', { _: 'Clear' })}
       </MuiButton>
     </Box>
   );
@@ -359,22 +361,25 @@ interface EmptyStateProps {
   message?: string;
 }
 
-const EmptyValue = ({ message = '暂无数据' }: EmptyStateProps) => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 0.5,
-      color: 'text.disabled',
-      fontStyle: 'italic',
-      fontSize: '0.85rem',
-    }}
-  >
-    <Typography variant="body2" sx={{ opacity: 0.6 }}>
-      {message}
-    </Typography>
-  </Box>
-);
+const EmptyValue = ({ message }: EmptyStateProps) => {
+  const translate = useTranslate();
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        color: 'text.disabled',
+        fontStyle: 'italic',
+        fontSize: '0.85rem',
+      }}
+    >
+      <Typography variant="body2" sx={{ opacity: 0.6 }}>
+        {message ?? translate('common.no_data', { _: 'No data' })}
+      </Typography>
+    </Box>
+  );
+};
 
 // ============ 表单组件 ============
 
@@ -891,9 +896,10 @@ const UsernameField = () => {
 
 const ExpireTimeField = () => {
   const record = useRecordContext<RadiusUser>();
+  const translate = useTranslate();
   if (!record) return null;
 
-  const expireInfo = formatExpireTime(record.expire_time);
+  const expireInfo = formatExpireTime(record.expire_time, translate);
 
   return (
     <Chip
@@ -1086,7 +1092,7 @@ const RadiusUserListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 个用户
+            {translate('resources.radius/users.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} users' })}
           </Typography>
         </Box>
 
@@ -1202,20 +1208,21 @@ export const RadiusUserList = () => {
 
 // RADIUS 用户编辑
 export const RadiusUserEdit = () => {
+  const translate = useTranslate();
   return (
     <Edit>
       <SimpleForm toolbar={<UserFormToolbar />} sx={formLayoutSx}>
         <FormSection
-          title="身份认证"
-          description="用户的基本认证信息"
+          title={translate('resources.radius/users.sections.authentication', { _: 'Authentication' })}
+          description={translate('resources.radius/users.sections.authentication_desc', { _: 'Basic authentication information' })}
         >
           <FieldGrid columns={{ xs: 1, sm: 2 }}>
             <FieldGridItem>
               <TextInput
                 source="id"
                 disabled
-                label="用户ID"
-                helperText="系统自动生成的唯一标识"
+                label={translate('resources.radius/users.fields.id', { _: 'ID' })}
+                helperText={translate('resources.radius/users.helpers.id', { _: 'System generated unique identifier' })}
                 fullWidth
                 size="small"
               />
@@ -1223,9 +1230,9 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="username"
-                label="用户名"
+                label={translate('resources.radius/users.fields.username', { _: 'Username' })}
                 validate={[required(), minLength(3), maxLength(50)]}
-                helperText="3-50个字符，只能包含字母、数字、下划线"
+                helperText={translate('resources.radius/users.helpers.username', { _: '3-50 characters, letters, numbers and underscores only' })}
                 autoComplete="username"
                 readOnly
                 fullWidth
@@ -1235,10 +1242,10 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="password"
-                label="密码"
+                label={translate('resources.radius/users.fields.password', { _: 'Password' })}
                 type="password"
                 validate={[minLength(6), maxLength(128)]}
-                helperText="留空则不修改密码"
+                helperText={translate('resources.radius/users.helpers.password', { _: 'Leave blank to keep current password' })}
                 autoComplete="new-password"
                 fullWidth
                 size="small"
@@ -1247,9 +1254,9 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="realname"
-                label="真实姓名"
+                label={translate('resources.radius/users.fields.realname', { _: 'Real Name' })}
                 validate={[maxLength(100)]}
-                helperText="用户的真实姓名"
+                helperText={translate('resources.radius/users.helpers.realname', { _: 'User\'s real name' })}
                 fullWidth
                 size="small"
               />
@@ -1258,17 +1265,17 @@ export const RadiusUserEdit = () => {
         </FormSection>
 
         <FormSection
-          title="联系方式"
-          description="联系信息和地址"
+          title={translate('resources.radius/users.sections.contact', { _: 'Contact Information' })}
+          description={translate('resources.radius/users.sections.contact_desc', { _: 'Contact details and address' })}
         >
           <FieldGrid columns={{ xs: 1, sm: 2 }}>
             <FieldGridItem>
               <TextInput
                 source="email"
-                label="邮箱"
+                label={translate('resources.radius/users.fields.email', { _: 'Email' })}
                 type="email"
                 validate={[email(), maxLength(100)]}
-                helperText="用于接收通知和找回密码"
+                helperText={translate('resources.radius/users.helpers.email', { _: 'For notifications and password recovery' })}
                 autoComplete="email"
                 fullWidth
                 size="small"
@@ -1277,9 +1284,9 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="mobile"
-                label="手机号"
+                label={translate('resources.radius/users.fields.mobile', { _: 'Mobile' })}
                 validate={[maxLength(20)]}
-                helperText="手机号码（可选），最多20个字符"
+                helperText={translate('resources.radius/users.helpers.mobile', { _: 'Mobile number (optional), max 20 characters' })}
                 autoComplete="tel"
                 fullWidth
                 size="small"
@@ -1288,10 +1295,10 @@ export const RadiusUserEdit = () => {
             <FieldGridItem span={{ xs: 1, sm: 2 }}>
               <TextInput
                 source="address"
-                label="地址"
+                label={translate('resources.radius/users.fields.address', { _: 'Address' })}
                 multiline
                 minRows={2}
-                helperText="详细地址信息"
+                helperText={translate('resources.radius/users.helpers.address', { _: 'Detailed address information' })}
                 autoComplete="street-address"
                 fullWidth
                 size="small"
@@ -1301,25 +1308,25 @@ export const RadiusUserEdit = () => {
         </FormSection>
 
         <FormSection
-          title="服务配置"
-          description="RADIUS服务和权限设置"
+          title={translate('resources.radius/users.sections.service', { _: 'Service Configuration' })}
+          description={translate('resources.radius/users.sections.service_desc', { _: 'RADIUS service and permission settings' })}
         >
           <FieldGrid columns={{ xs: 1, sm: 2 }}>
             <FieldGridItem>
               <Box sx={controlWrapperSx}>
                 <BooleanInput
                   source="status"
-                  label="启用状态"
-                  helperText="是否启用此用户的RADIUS服务"
+                  label={translate('resources.radius/users.fields.status', { _: 'Status' })}
+                  helperText={translate('resources.radius/users.helpers.status', { _: 'Enable/disable RADIUS service for this user' })}
                 />
               </Box>
             </FieldGridItem>
             <FieldGridItem>
               <ReferenceInput source="profile_id" reference="radius/profiles">
                 <SelectInput
-                  label="计费策略"
+                  label={translate('resources.radius/users.fields.profile_id', { _: 'Billing Profile' })}
                   optionText="name"
-                  helperText="选择用户的RADIUS计费策略"
+                  helperText={translate('resources.radius/users.helpers.profile_id', { _: 'Select the RADIUS billing profile for the user' })}
                   fullWidth
                   size="small"
                 />
@@ -1332,15 +1339,15 @@ export const RadiusUserEdit = () => {
         </FormSection>
 
         <FormSection
-          title="网络配置"
-          description="IP地址分配设置"
+          title={translate('resources.radius/users.sections.network', { _: 'Network Configuration' })}
+          description={translate('resources.radius/users.sections.network_desc', { _: 'IP address allocation settings' })}
         >
           <FieldGrid columns={{ xs: 1, sm: 2 }}>
             <FieldGridItem>
               <TextInput
                 source="ip_addr"
-                label="IPv4地址"
-                helperText="静态IPv4地址，如 192.168.1.100"
+                label={translate('resources.radius/users.fields.ip_addr', { _: 'IPv4 Address' })}
+                helperText={translate('resources.radius/users.helpers.ip_addr', { _: 'Static IPv4 address, e.g. 192.168.1.100' })}
                 fullWidth
                 size="small"
               />
@@ -1348,8 +1355,8 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="ipv6_addr"
-                label="IPv6地址"
-                helperText="静态IPv6地址，如 2001:db8::1"
+                label={translate('resources.radius/users.fields.ipv6_addr', { _: 'IPv6 Address' })}
+                helperText={translate('resources.radius/users.helpers.ipv6_addr', { _: 'Static IPv6 address, e.g. 2001:db8::1' })}
                 fullWidth
                 size="small"
               />
@@ -1357,8 +1364,8 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="ipv6_prefix_pool"
-                label="IPv6前缀池"
-                helperText="Framed-IPv6-Pool 池名（SLAAC 无状态地址自动配置）"
+                label={translate('resources.radius/users.fields.ipv6_prefix_pool', { _: 'IPv6 Prefix Pool' })}
+                helperText={translate('resources.radius/users.helpers.ipv6_prefix_pool', { _: 'Framed-IPv6-Pool pool name (SLAAC stateless address autoconfiguration)' })}
                 fullWidth
                 size="small"
               />
@@ -1366,8 +1373,8 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="delegated_ipv6_prefix"
-                label="委派IPv6前缀"
-                helperText="静态 Delegated-IPv6-Prefix，如 2001:db8:1234::/48"
+                label={translate('resources.radius/users.fields.delegated_ipv6_prefix', { _: 'Delegated IPv6 Prefix' })}
+                helperText={translate('resources.radius/users.helpers.delegated_ipv6_prefix', { _: 'Static Delegated-IPv6-Prefix, e.g. 2001:db8:1234::/48' })}
                 fullWidth
                 size="small"
               />
@@ -1375,8 +1382,8 @@ export const RadiusUserEdit = () => {
             <FieldGridItem>
               <TextInput
                 source="delegated_ipv6_prefix_pool"
-                label="委派IPv6前缀池"
-                helperText="DHCPv6-PD 前缀委派池名（RFC 6911 §2.4，与 IPv6 前缀池区分）"
+                label={translate('resources.radius/users.fields.delegated_ipv6_prefix_pool', { _: 'Delegated IPv6 Prefix Pool' })}
+                helperText={translate('resources.radius/users.helpers.delegated_ipv6_prefix_pool', { _: 'DHCPv6-PD prefix delegation pool name (RFC 6911 §2.4, distinct from the IPv6 prefix pool)' })}
                 fullWidth
                 size="small"
               />
@@ -1384,8 +1391,8 @@ export const RadiusUserEdit = () => {
             <FieldGridItem span={{ xs: 1, sm: 2 }}>
               <TextInput
                 source="radius_class"
-                label="RADIUS Class"
-                helperText="RFC 2865 Class，原样写入 Access-Accept。ocserv 群组请填 OU=group1;group2"
+                label={translate('resources.radius/users.fields.radius_class', { _: 'RADIUS Class' })}
+                helperText={translate('resources.radius/users.helpers.radius_class', { _: 'RFC 2865 Class, emitted as-is. For ocserv groups use OU=group1;group2' })}
                 validate={[maxLength(253)]}
                 fullWidth
                 size="small"
@@ -1395,19 +1402,19 @@ export const RadiusUserEdit = () => {
         </FormSection>
 
         <FormSection
-          title="备注信息"
-          description="额外的说明和备注"
+          title={translate('resources.radius/users.sections.remark', { _: 'Remark' })}
+          description={translate('resources.radius/users.sections.remark_desc', { _: 'Additional notes and comments' })}
         >
           <FieldGrid columns={{ xs: 1, sm: 2 }}>
             <FieldGridItem span={{ xs: 1, sm: 2 }}>
               <TextInput
                 source="remark"
-                label="备注"
+                label={translate('resources.radius/users.fields.remark', { _: 'Remark' })}
                 multiline
                 minRows={3}
                 fullWidth
                 size="small"
-                helperText="可选的备注信息，最多1000个字符"
+                helperText={translate('resources.radius/users.helpers.remark', { _: 'Optional notes, max 1000 characters' })}
               />
             </FieldGridItem>
           </FieldGrid>
@@ -1418,20 +1425,22 @@ export const RadiusUserEdit = () => {
 };
 
 // RADIUS 用户创建
-export const RadiusUserCreate = () => (
+export const RadiusUserCreate = () => {
+  const translate = useTranslate();
+  return (
   <Create>
     <SimpleForm sx={formLayoutSx}>
       <FormSection
-        title="身份认证"
-        description="用户的基本认证信息"
+        title={translate('resources.radius/users.sections.authentication', { _: 'Authentication' })}
+        description={translate('resources.radius/users.sections.authentication_desc', { _: 'Basic authentication information' })}
       >
         <FieldGrid columns={{ xs: 1, sm: 2 }}>
           <FieldGridItem>
             <TextInput
               source="username"
-              label="用户名"
+              label={translate('resources.radius/users.fields.username', { _: 'Username' })}
               validate={[required(), minLength(3), maxLength(50)]}
-              helperText="3-50个字符，只能包含字母、数字、下划线"
+              helperText={translate('resources.radius/users.helpers.username', { _: '3-50 characters, letters, numbers and underscores only' })}
               autoComplete="username"
               fullWidth
               size="small"
@@ -1440,10 +1449,10 @@ export const RadiusUserCreate = () => (
           <FieldGridItem>
             <TextInput
               source="password"
-              label="密码"
+              label={translate('resources.radius/users.fields.password', { _: 'Password' })}
               type="password"
               validate={[required(), minLength(6), maxLength(128)]}
-              helperText="6-128个字符的密码"
+              helperText={translate('resources.radius/users.helpers.password_create', { _: '6-128 character password' })}
               autoComplete="new-password"
               fullWidth
               size="small"
@@ -1452,9 +1461,9 @@ export const RadiusUserCreate = () => (
           <FieldGridItem span={{ xs: 1, sm: 2 }}>
             <TextInput
               source="realname"
-              label="真实姓名"
+              label={translate('resources.radius/users.fields.realname', { _: 'Real Name' })}
               validate={[maxLength(100)]}
-              helperText="用户的真实姓名"
+              helperText={translate('resources.radius/users.helpers.realname', { _: 'User\'s real name' })}
               autoComplete="name"
               fullWidth
               size="small"
@@ -1464,17 +1473,17 @@ export const RadiusUserCreate = () => (
       </FormSection>
 
         <FormSection
-          title="联系方式"
-          description="联系信息和地址"
+          title={translate('resources.radius/users.sections.contact', { _: 'Contact Information' })}
+          description={translate('resources.radius/users.sections.contact_desc', { _: 'Contact details and address' })}
         >
           <FieldGrid columns={{ xs: 1, sm: 2 }}>
             <FieldGridItem>
               <TextInput
                 source="email"
-                label="邮箱"
+                label={translate('resources.radius/users.fields.email', { _: 'Email' })}
                 type="email"
                 validate={[email(), maxLength(100)]}
-                helperText="用于接收通知和找回密码"
+                helperText={translate('resources.radius/users.helpers.email', { _: 'For notifications and password recovery' })}
                 autoComplete="email"
                 fullWidth
                 size="small"
@@ -1483,9 +1492,9 @@ export const RadiusUserCreate = () => (
             <FieldGridItem>
               <TextInput
                 source="mobile"
-                label="手机号"
+                label={translate('resources.radius/users.fields.mobile', { _: 'Mobile' })}
                 validate={[maxLength(20)]}
-                helperText="手机号码（可选），最多20个字符"
+                helperText={translate('resources.radius/users.helpers.mobile', { _: 'Mobile number (optional), max 20 characters' })}
                 autoComplete="tel"
                 fullWidth
                 size="small"
@@ -1494,10 +1503,10 @@ export const RadiusUserCreate = () => (
             <FieldGridItem span={{ xs: 1, sm: 2 }}>
               <TextInput
                 source="address"
-                label="地址"
+                label={translate('resources.radius/users.fields.address', { _: 'Address' })}
                 multiline
                 minRows={2}
-                helperText="详细地址信息"
+                helperText={translate('resources.radius/users.helpers.address', { _: 'Detailed address information' })}
                 autoComplete="street-address"
                 fullWidth
                 size="small"
@@ -1507,26 +1516,26 @@ export const RadiusUserCreate = () => (
         </FormSection>
 
       <FormSection
-        title="服务配置"
-        description="RADIUS服务和权限设置"
+        title={translate('resources.radius/users.sections.service', { _: 'Service Configuration' })}
+        description={translate('resources.radius/users.sections.service_desc', { _: 'RADIUS service and permission settings' })}
       >
         <FieldGrid columns={{ xs: 1, sm: 2 }}>
           <FieldGridItem>
             <Box sx={controlWrapperSx}>
               <BooleanInput
                 source="status"
-                label="启用状态"
+                label={translate('resources.radius/users.fields.status', { _: 'Status' })}
                 defaultValue={true}
-                helperText="是否启用此用户的RADIUS服务"
+                helperText={translate('resources.radius/users.helpers.status', { _: 'Enable/disable RADIUS service for this user' })}
               />
             </Box>
           </FieldGridItem>
           <FieldGridItem>
             <ReferenceInput source="profile_id" reference="radius/profiles">
               <SelectInput
-                label="计费策略"
+                label={translate('resources.radius/users.fields.profile_id', { _: 'Billing Profile' })}
                 optionText="name"
-                helperText="选择用户的RADIUS计费策略"
+                helperText={translate('resources.radius/users.helpers.profile_id', { _: 'Select the RADIUS billing profile for the user' })}
                 fullWidth
                 size="small"
               />
@@ -1539,15 +1548,15 @@ export const RadiusUserCreate = () => (
       </FormSection>
 
       <FormSection
-        title="网络配置"
-        description="IP地址分配设置"
+        title={translate('resources.radius/users.sections.network', { _: 'Network Configuration' })}
+        description={translate('resources.radius/users.sections.network_desc', { _: 'IP address allocation settings' })}
       >
         <FieldGrid columns={{ xs: 1, sm: 2 }}>
           <FieldGridItem>
             <TextInput
               source="ip_addr"
-              label="IPv4地址"
-              helperText="静态IPv4地址，如 192.168.1.100"
+              label={translate('resources.radius/users.fields.ip_addr', { _: 'IPv4 Address' })}
+              helperText={translate('resources.radius/users.helpers.ip_addr', { _: 'Static IPv4 address, e.g. 192.168.1.100' })}
               fullWidth
               size="small"
             />
@@ -1555,8 +1564,8 @@ export const RadiusUserCreate = () => (
           <FieldGridItem>
             <TextInput
               source="ipv6_addr"
-              label="IPv6地址"
-              helperText="静态IPv6地址，如 2001:db8::1"
+              label={translate('resources.radius/users.fields.ipv6_addr', { _: 'IPv6 Address' })}
+              helperText={translate('resources.radius/users.helpers.ipv6_addr', { _: 'Static IPv6 address, e.g. 2001:db8::1' })}
               fullWidth
               size="small"
             />
@@ -1564,8 +1573,8 @@ export const RadiusUserCreate = () => (
           <FieldGridItem span={{ xs: 1, sm: 2 }}>
             <TextInput
               source="radius_class"
-              label="RADIUS Class"
-              helperText="RFC 2865 Class，原样写入 Access-Accept。ocserv 群组请填 OU=group1;group2；留空则继承计费策略"
+              label={translate('resources.radius/users.fields.radius_class', { _: 'RADIUS Class' })}
+              helperText={translate('resources.radius/users.helpers.radius_class_create', { _: 'RFC 2865 Class, emitted as-is in Access-Accept. For ocserv groups use OU=group1;group2; leave blank to inherit from the billing profile' })}
               validate={[maxLength(253)]}
               fullWidth
               size="small"
@@ -1575,26 +1584,27 @@ export const RadiusUserCreate = () => (
       </FormSection>
 
       <FormSection
-        title="备注信息"
-        description="额外的说明和备注"
+        title={translate('resources.radius/users.sections.remark', { _: 'Remark' })}
+        description={translate('resources.radius/users.sections.remark_desc', { _: 'Additional notes and comments' })}
       >
         <FieldGrid columns={{ xs: 1, sm: 2 }}>
           <FieldGridItem span={{ xs: 1, sm: 2 }}>
             <TextInput
               source="remark"
-              label="备注"
+              label={translate('resources.radius/users.fields.remark', { _: 'Remark' })}
               multiline
               minRows={3}
               fullWidth
               size="small"
-              helperText="可选的备注信息，最多1000个字符"
+              helperText={translate('resources.radius/users.helpers.remark', { _: 'Optional notes, max 1000 characters' })}
             />
           </FieldGridItem>
         </FieldGrid>
       </FormSection>
     </SimpleForm>
   </Create>
-);
+  );
+};
 
 // ============ 顶部概览卡片 ============
 
@@ -1606,18 +1616,18 @@ const UserHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   if (!record) return null;
 
   const isEnabled = record.status === 'enabled';
-  const expireInfo = formatExpireTime(record.expire_time);
+  const expireInfo = formatExpireTime(record.expire_time, translate);
 
   return (
     <Card
@@ -1670,7 +1680,7 @@ const UserHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.username || <EmptyValue message="未知用户" />}
+                  {record.username || <EmptyValue message={translate('common.unknown_user', { _: 'Unknown user' })} />}
                 </Typography>
                 {isEnabled ? (
                   <Chip
@@ -1701,12 +1711,12 @@ const UserHeaderCard = () => {
               {record.username && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                    用户ID: {record.id}
+                    {translate('common.user_id_with_value', { id: record.id, _: 'User ID: %{id}' })}
                   </Typography>
-                  <Tooltip title="复制用户名">
+                  <Tooltip title={translate('common.copy_username', { _: 'Copy username' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.username!, '用户名')}
+                      onClick={() => handleCopy(record.username!, translate('resources.radius/users.fields.username', { _: 'Username' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -1719,7 +1729,7 @@ const UserHeaderCard = () => {
 
           {/* 右侧：操作按钮 */}
           <Box className="no-print" sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -1732,7 +1742,7 @@ const UserHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{
@@ -1994,7 +2004,7 @@ const UserDetails = () => {
                       <TextField source="name" />
                     </ReferenceField>
                   ) : (
-                    <EmptyValue message="未分配" />
+                    <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                   )
                 }
                 highlight
@@ -2003,7 +2013,7 @@ const UserDetails = () => {
                 label={translate('resources.radius/users.fields.expire_time', { _: '过期时间' })}
                 value={
                   (() => {
-                    const info = formatExpireTime(record.expire_time);
+                    const info = formatExpireTime(record.expire_time, translate);
                     return (
                       <Chip
                         label={info.text}
@@ -2048,7 +2058,7 @@ const UserDetails = () => {
                       sx={{ fontFamily: 'monospace' }}
                     />
                   ) : (
-                    <EmptyValue message="未分配" />
+                    <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                   )
                 }
               />
@@ -2064,7 +2074,7 @@ const UserDetails = () => {
                       sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
                     />
                   ) : (
-                    <EmptyValue message="未分配" />
+                    <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                   )
                 }
               />
@@ -2080,7 +2090,7 @@ const UserDetails = () => {
                       sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
                     />
                   ) : (
-                    <EmptyValue message="未分配" />
+                    <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                   )
                 }
               />
@@ -2096,7 +2106,7 @@ const UserDetails = () => {
                       sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
                     />
                   ) : (
-                    <EmptyValue message="未分配" />
+                    <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                   )
                 }
               />
@@ -2112,7 +2122,7 @@ const UserDetails = () => {
                       sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
                     />
                   ) : (
-                    <EmptyValue message="未分配" />
+                    <EmptyValue message={translate('common.not_assigned', { _: 'Not assigned' })} />
                   )
                 }
               />
@@ -2128,7 +2138,7 @@ const UserDetails = () => {
                       sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
                     />
                   ) : (
-                    <EmptyValue message="未设置" />
+                    <EmptyValue message={translate('common.not_set', { _: 'Not set' })} />
                   )
                 }
               />

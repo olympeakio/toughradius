@@ -606,7 +606,7 @@ const OperatorListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 个操作员
+            {translate('resources.system/operators.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} operators' })}
           </Typography>
         </Box>
 
@@ -1027,13 +1027,13 @@ const OperatorHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   if (!record) return null;
 
@@ -1090,7 +1090,7 @@ const OperatorHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.username || <EmptyValue message="未知用户" />}
+                  {record.username || <EmptyValue message={translate('common.unknown_user', { _: 'Unknown user' })} />}
                 </Typography>
                 <StatusIndicator isEnabled={isEnabled} />
                 <LevelChip level={record.level} />
@@ -1107,10 +1107,10 @@ const OperatorHeaderCard = () => {
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
                     ID: {record.id}
                   </Typography>
-                  <Tooltip title="复制用户名">
+                  <Tooltip title={translate('common.copy_username', { _: 'Copy username' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.username!, '用户名')}
+                      onClick={() => handleCopy(record.username!, translate('resources.system/operators.fields.username', { _: 'Username' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -1123,7 +1123,7 @@ const OperatorHeaderCard = () => {
 
           {/* 右侧：操作按钮 */}
           <Box className="no-print" sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -1136,7 +1136,7 @@ const OperatorHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{

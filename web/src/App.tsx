@@ -26,7 +26,7 @@ const CustomLoading = () => (
   >
     <CircularProgress size={40} sx={{ color: '#2563eb' }} />
     <Typography variant="body1" color="text.secondary" sx={{ color: '#64748b' }}>
-      正在加载...
+      {i18nProvider.translate('app.loading', { _: 'Loading...' })}
     </Typography>
   </Box>
 );

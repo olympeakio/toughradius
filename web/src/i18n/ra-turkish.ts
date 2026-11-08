@@ -44,6 +44,8 @@ const turkishMessages: TranslationMessages = {
       toggle_theme: 'Açık/koyu modu değiştir',
       select_columns: 'Sütunlar',
       update_application: 'Uygulamayı yeniden yükle',
+      clear_filters: 'Filtreleri temizle',
+      actions: 'İşlemler',
     },
     boolean: {
       true: 'Evet',

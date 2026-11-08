@@ -527,7 +527,7 @@ const NodeListContent = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            共 <strong>{total?.toLocaleString() || 0}</strong> 个节点
+            {translate('resources.network/nodes.list.total', { count: total?.toLocaleString() || 0, _: 'Total: %{count} nodes' })}
           </Typography>
         </Box>
 
@@ -766,13 +766,13 @@ const NodeHeaderCard = () => {
 
   const handleCopy = useCallback((text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    notify(`${label} 已复制到剪贴板`, { type: 'info' });
-  }, [notify]);
+    notify(translate('common.copied_to_clipboard', { label, _: '%{label} copied to clipboard' }), { type: 'info' });
+  }, [notify, translate]);
 
   const handleRefresh = useCallback(() => {
     refresh();
-    notify('数据已刷新', { type: 'info' });
-  }, [refresh, notify]);
+    notify(translate('common.data_refreshed', { _: 'Data refreshed' }), { type: 'info' });
+  }, [refresh, notify, translate]);
 
   if (!record) return null;
 
@@ -825,7 +825,7 @@ const NodeHeaderCard = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  {record.name || <EmptyValue message="未知节点" />}
+                  {record.name || <EmptyValue message={translate('common.unknown_node', { _: 'Unknown node' })} />}
                 </Typography>
               </Box>
               {record.name && (
@@ -833,10 +833,10 @@ const NodeHeaderCard = () => {
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
                     ID: {record.id}
                   </Typography>
-                  <Tooltip title="复制节点名称">
+                  <Tooltip title={translate('common.copy_node_name', { _: 'Copy node name' })}>
                     <IconButton
                       size="small"
-                      onClick={() => handleCopy(record.name!, '节点名称')}
+                      onClick={() => handleCopy(record.name!, translate('common.node_name', { _: 'Node name' }))}
                       sx={{ p: 0.5 }}
                     >
                       <CopyIcon sx={{ fontSize: '0.75rem' }} />
@@ -849,7 +849,7 @@ const NodeHeaderCard = () => {
 
           {/* 右侧：操作按钮 */}
           <Box className="no-print" sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="打印详情">
+            <Tooltip title={translate('common.print_details', { _: 'Print details' })}>
               <IconButton
                 onClick={() => window.print()}
                 sx={{
@@ -862,7 +862,7 @@ const NodeHeaderCard = () => {
                 <PrintIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="刷新数据">
+            <Tooltip title={translate('common.refresh_data', { _: 'Refresh data' })}>
               <IconButton
                 onClick={handleRefresh}
                 sx={{

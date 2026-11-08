@@ -31,21 +31,21 @@ export const SystemSettingsList = () => (
   <List actions={<SettingsListActions />} filters={settingsFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
-      <TextField source="type" label="类型" />
-      <TextField source="name" label="配置名称" />
-      <TextField source="value" label="配置值" />
-      <TextField source="sort" label="排序" />
-      <TextField source="remark" label="备注" />
-      <DateField source="created_at" label="创建时间" showTime />
-      <DateField source="updated_at" label="更新时间" showTime />
+      <TextField source="type" label="resources.system/settings.fields.type" />
+      <TextField source="name" label="resources.system/settings.fields.name" />
+      <TextField source="value" label="resources.system/settings.fields.value" />
+      <TextField source="sort" label="resources.system/settings.fields.sort" />
+      <TextField source="remark" label="resources.system/settings.fields.remark" />
+      <DateField source="created_at" label="resources.system/settings.fields.created_at" showTime />
+      <DateField source="updated_at" label="resources.system/settings.fields.updated_at" showTime />
     </Datagrid>
   </List>
 );
 
 // 筛选器
 const settingsFilters = [
-  <TextInput label="类型" source="type" alwaysOn />,
-  <TextInput label="名称" source="name" />,
+  <TextInput label="resources.system/settings.fields.type" source="type" alwaysOn />,
+  <TextInput label="resources.system/settings.filters.name" source="name" />,
 ];
 
 // 系统设置编辑
@@ -55,21 +55,21 @@ export const SystemSettingsEdit = () => (
       <TextInput source="id" disabled />
       <SelectInput
         source="type"
-        label="类型"
+        label="resources.system/settings.fields.type"
         required
         choices={[
-          { id: 'system', name: '系统配置' },
-          { id: 'radius', name: 'RADIUS配置' },
-          { id: 'security', name: '安全配置' },
-          { id: 'network', name: '网络配置' },
-          { id: 'email', name: '邮件配置' },
-          { id: 'other', name: '其他配置' },
+          { id: 'system', name: 'resources.system/settings.types.system' },
+          { id: 'radius', name: 'resources.system/settings.types.radius' },
+          { id: 'security', name: 'resources.system/settings.types.security' },
+          { id: 'network', name: 'resources.system/settings.types.network' },
+          { id: 'email', name: 'resources.system/settings.types.email' },
+          { id: 'other', name: 'resources.system/settings.types.other' },
         ]}
       />
-      <TextInput source="name" label="配置名称" required />
-      <TextInput source="value" label="配置值" required multiline rows={3} />
-      <NumberInput source="sort" label="排序" defaultValue={0} />
-      <TextInput source="remark" label="备注" multiline rows={2} />
+      <TextInput source="name" label="resources.system/settings.fields.name" required />
+      <TextInput source="value" label="resources.system/settings.fields.value" required multiline rows={3} />
+      <NumberInput source="sort" label="resources.system/settings.fields.sort" defaultValue={0} />
+      <TextInput source="remark" label="resources.system/settings.fields.remark" multiline rows={2} />
     </SimpleForm>
   </Edit>
 );
@@ -80,22 +80,22 @@ export const SystemSettingsCreate = () => (
     <SimpleForm>
       <SelectInput
         source="type"
-        label="类型"
+        label="resources.system/settings.fields.type"
         required
         defaultValue="system"
         choices={[
-          { id: 'system', name: '系统配置' },
-          { id: 'radius', name: 'RADIUS配置' },
-          { id: 'security', name: '安全配置' },
-          { id: 'network', name: '网络配置' },
-          { id: 'email', name: '邮件配置' },
-          { id: 'other', name: '其他配置' },
+          { id: 'system', name: 'resources.system/settings.types.system' },
+          { id: 'radius', name: 'resources.system/settings.types.radius' },
+          { id: 'security', name: 'resources.system/settings.types.security' },
+          { id: 'network', name: 'resources.system/settings.types.network' },
+          { id: 'email', name: 'resources.system/settings.types.email' },
+          { id: 'other', name: 'resources.system/settings.types.other' },
         ]}
       />
-      <TextInput source="name" label="配置名称" required />
-      <TextInput source="value" label="配置值" required multiline rows={3} />
-      <NumberInput source="sort" label="排序" defaultValue={0} />
-      <TextInput source="remark" label="备注" multiline rows={2} />
+      <TextInput source="name" label="resources.system/settings.fields.name" required />
+      <TextInput source="value" label="resources.system/settings.fields.value" required multiline rows={3} />
+      <NumberInput source="sort" label="resources.system/settings.fields.sort" defaultValue={0} />
+      <TextInput source="remark" label="resources.system/settings.fields.remark" multiline rows={2} />
     </SimpleForm>
   </Create>
 );
@@ -105,13 +105,13 @@ export const SystemSettingsShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
-      <TextField source="type" label="类型" />
-      <TextField source="name" label="配置名称" />
-      <TextField source="value" label="配置值" />
-      <TextField source="sort" label="排序" />
-      <TextField source="remark" label="备注" />
-      <DateField source="created_at" label="创建时间" showTime />
-      <DateField source="updated_at" label="更新时间" showTime />
+      <TextField source="type" label="resources.system/settings.fields.type" />
+      <TextField source="name" label="resources.system/settings.fields.name" />
+      <TextField source="value" label="resources.system/settings.fields.value" />
+      <TextField source="sort" label="resources.system/settings.fields.sort" />
+      <TextField source="remark" label="resources.system/settings.fields.remark" />
+      <DateField source="created_at" label="resources.system/settings.fields.created_at" showTime />
+      <DateField source="updated_at" label="resources.system/settings.fields.updated_at" showTime />
     </SimpleShowLayout>
   </Show>
 );
