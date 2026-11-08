@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import {
   Card,
@@ -12,14 +12,9 @@ import {
 
 export default function AuthTest() {
   const notify = useNotify();
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const savedToken = localStorage.getItem('token') || '';
-    setToken(savedToken);
-  }, []);
 
   const testLogin = async () => {
     setLoading(true);

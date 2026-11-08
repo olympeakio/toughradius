@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNotify, useTranslate } from 'react-admin';
 import {
@@ -37,29 +37,42 @@ interface OperatorProfile {
 
 const ACCOUNT_QUERY_KEY = ['operators', 'me'] as const;
 
+function readCachedUser(): OperatorProfile | null {
+  try {
+    const raw = localStorage.getItem('user');
+    return raw ? (JSON.parse(raw) as OperatorProfile) : null;
+  } catch {
+    return null; // bozuk önbellek yok sayılır
+  }
+}
+const toProfileForm = (u: OperatorProfile | null | undefined) => ({
+  username: u?.username ?? '',
+  realname: u?.realname ?? '',
+  mobile: u?.mobile ?? '',
+  email: u?.email ?? '',
+  remark: u?.remark ?? '',
+});
+const toUserInfo = (u: OperatorProfile | null | undefined) => ({
+  level: u?.level ?? '',
+  status: u?.status ?? '',
+});
+
 export default function AccountSettings() {
   const notify = useNotify();
   const translate = useTranslate();
   const queryClient = useQueryClient();
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['profile']);
 
-  const [profileForm, setProfileForm] = useState({
-    username: '',
-    realname: '',
-    mobile: '',
-    email: '',
-    remark: '',
-  });
+  // İlk değer önbellekteki kullanıcıdan (önceden mount effect'inde setState → ek render).
+  const [cachedUser] = useState(readCachedUser);
+  const [profileForm, setProfileForm] = useState(() => toProfileForm(cachedUser));
 
   const [passwordForm, setPasswordForm] = useState({
     newPassword: '',
     confirmPassword: '',
   });
 
-  const [userInfo, setUserInfo] = useState({
-    level: '',
-    status: '',
-  });
+  const [userInfo, setUserInfo] = useState(() => toUserInfo(cachedUser));
 
   const ACCOUNT_GROUPS = {
     profile: {
@@ -76,29 +89,6 @@ export default function AccountSettings() {
     },
   };
 
-  useEffect(() => {
-    const cachedUser = localStorage.getItem('user');
-    if (!cachedUser) {
-      return;
-    }
-    try {
-      const parsed = JSON.parse(cachedUser) as OperatorProfile;
-      setProfileForm({
-        username: parsed.username ?? '',
-        realname: parsed.realname ?? '',
-        mobile: parsed.mobile ?? '',
-        email: parsed.email ?? '',
-        remark: parsed.remark ?? '',
-      });
-      setUserInfo({
-        level: parsed.level ?? '',
-        status: parsed.status ?? '',
-      });
-    } catch {
-      // ignore malformed cache
-    }
-  }, []);
-
   const profileQuery = useApiQuery<OperatorProfile>({
     path: '/system/operators/me',
     queryKey: ACCOUNT_QUERY_KEY,
@@ -106,7 +96,7 @@ export default function AccountSettings() {
     retry: 1,
   });
 
-  const handleAuthError = (error: unknown) => {
+  const handleAuthError = useCallback((error: unknown) => {
     if (error instanceof ApiError && error.status === 401) {
       notify(translate('auth.session_expired', { _: 'Authentication expired, please log in again' }), { type: 'error' });
       clearAuthStorage();
@@ -114,22 +104,20 @@ export default function AccountSettings() {
       return true;
     }
     return false;
-  };
+  }, [notify, translate]);
+
+  // Sunucudan gelen profil: form durumu render sırasında eşitlenir; önbelleğe yazma ve kimlik
+  // yenileme (yan etkiler) effect'te kalır.
+  const [syncedProfile, setSyncedProfile] = useState<OperatorProfile | undefined>(undefined);
+  if (profileQuery.data && profileQuery.data !== syncedProfile) {
+    setSyncedProfile(profileQuery.data);
+    setProfileForm(toProfileForm(profileQuery.data));
+    setUserInfo(toUserInfo(profileQuery.data));
+  }
 
   useEffect(() => {
     if (profileQuery.data) {
       const data = profileQuery.data;
-      setProfileForm({
-        username: data.username ?? '',
-        realname: data.realname ?? '',
-        mobile: data.mobile ?? '',
-        email: data.email ?? '',
-        remark: data.remark ?? '',
-      });
-      setUserInfo({
-        level: data.level ?? '',
-        status: data.status ?? '',
-      });
       localStorage.setItem('user', JSON.stringify(data));
       if (data.username) {
         localStorage.setItem('username', data.username);
@@ -143,7 +131,7 @@ export default function AccountSettings() {
     if (profileQuery.error) {
       handleAuthError(profileQuery.error);
     }
-  }, [profileQuery.error]);
+  }, [profileQuery.error, handleAuthError]);
 
   const handleGroupToggle = (group: string) => {
     setExpandedGroups(prev =>

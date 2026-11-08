@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
@@ -125,17 +125,18 @@ export const SystemConfigPage: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  useEffect(() => {
-    if (!settingsQuery.data) {
-      return;
-    }
-    const map = settingsQuery.data.reduce<Record<string, ConfigValue>>((acc, config) => {
-      const key = `${config.type}.${config.name}`;
-      acc[key] = config;
-      return acc;
-    }, {});
-    setConfigs(map);
-  }, [settingsQuery.data]);
+  // Sunucudan yeni ayar listesi gelince yerel düzenleme durumunu yeniden kur (render sırasında;
+  // effect + setState kademeli render yapıyordu).
+  const [syncedData, setSyncedData] = useState<ConfigValue[] | undefined>(undefined);
+  if (settingsQuery.data && settingsQuery.data !== syncedData) {
+    setSyncedData(settingsQuery.data);
+    setConfigs(
+      settingsQuery.data.reduce<Record<string, ConfigValue>>((acc, config) => {
+        acc[`${config.type}.${config.name}`] = config;
+        return acc;
+      }, {}),
+    );
+  }
 
   const configGroups = useMemo(() => ({
     radius: {

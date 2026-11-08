@@ -47,7 +47,7 @@ import {
   alpha
 } from '@mui/material';
 import type { Theme } from '@mui/material/styles';
-import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useMemo, useCallback } from 'react';
 import {
   Settings as ProfileIcon,
   Speed as SpeedIcon,
@@ -77,6 +77,7 @@ import {
   DetailSectionCard,
   EmptyValue
 } from '../components';
+import { useSyncedLocalFilters } from '../hooks/useSyncedLocalFilters';
 
 const LARGE_LIST_PER_PAGE = 50;
 
@@ -256,25 +257,14 @@ const ProfileEmptyState = () => {
 const ProfileSearchHeaderCard = () => {
   const translate = useTranslate();
   const { filterValues, setFilters, displayedFilters } = useListContext();
-  const [localFilters, setLocalFilters] = useState<Record<string, string>>({});
+  const [localFilters, setLocalFilters] = useSyncedLocalFilters(filterValues);
 
-  useEffect(() => {
-    const newLocalFilters: Record<string, string> = {};
-    if (filterValues) {
-      Object.entries(filterValues).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          newLocalFilters[key] = String(value);
-        }
-      });
-    }
-    setLocalFilters(newLocalFilters);
-  }, [filterValues]);
 
   const handleFilterChange = useCallback(
     (field: string, value: string) => {
       setLocalFilters(prev => ({ ...prev, [field]: value }));
     },
-    [],
+    [setLocalFilters],
   );
 
   const handleSearch = useCallback(() => {
@@ -290,7 +280,7 @@ const ProfileSearchHeaderCard = () => {
   const handleClear = useCallback(() => {
     setLocalFilters({});
     setFilters({}, displayedFilters);
-  }, [setFilters, displayedFilters]);
+  }, [setLocalFilters, setFilters, displayedFilters]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {

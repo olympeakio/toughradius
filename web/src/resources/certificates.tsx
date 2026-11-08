@@ -56,7 +56,7 @@ import {
   Article as ArticleIcon,
   CalendarMonth as CalendarIcon,
 } from '@mui/icons-material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ServerPagination,
   ActiveFilters,
@@ -69,6 +69,7 @@ import {
   EmptyValue,
 } from '../components';
 import { API_BASE } from '../utils/apiClient';
+import { useSyncedLocalFilters } from '../hooks/useSyncedLocalFilters';
 
 const LARGE_LIST_PER_PAGE = 50;
 
@@ -267,20 +268,9 @@ const CertificateListActions = () => {
 const CertificateSearchHeaderCard = () => {
   const translate = useTranslate();
   const { filterValues, setFilters, displayedFilters } = useListContext();
-  const [localFilters, setLocalFilters] = useState<Record<string, string>>({});
+  const [localFilters, setLocalFilters] = useSyncedLocalFilters(filterValues);
   const certTypeChoices = useMemo(() => buildCertificateTypeChoices(translate), [translate]);
 
-  useEffect(() => {
-    const newLocalFilters: Record<string, string> = {};
-    if (filterValues) {
-      Object.entries(filterValues).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          newLocalFilters[key] = String(value);
-        }
-      });
-    }
-    setLocalFilters(newLocalFilters);
-  }, [filterValues]);
 
   const handleSearch = useCallback(() => {
     const newFilters: Record<string, string> = {};
@@ -293,7 +283,7 @@ const CertificateSearchHeaderCard = () => {
   const handleClear = useCallback(() => {
     setLocalFilters({});
     setFilters({}, displayedFilters);
-  }, [displayedFilters, setFilters]);
+  }, [displayedFilters, setFilters, setLocalFilters]);
 
   const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.key === 'Enter') handleSearch();

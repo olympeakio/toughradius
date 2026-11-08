@@ -60,10 +60,11 @@ import {
   Search as SearchIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
-import { ReactNode, useMemo, useCallback, useState, useEffect } from 'react';
+import { ReactNode, useMemo, useCallback, useState } from 'react';
 import { ServerPagination, ActiveFilters } from '../components';
 import { apiRequest, ApiError } from '../utils/apiClient';
 import { formatBytes, sumNumberish, type Numberish } from '../utils/formatters';
+import { useSyncedLocalFilters } from '../hooks/useSyncedLocalFilters';
 
 const LARGE_LIST_PER_PAGE = 50;
 
@@ -1369,26 +1370,14 @@ const EmptyListState = () => {
 const SearchHeaderCard = () => {
   const translate = useTranslate();
   const { filterValues, setFilters, displayedFilters } = useListContext();
-  const [localFilters, setLocalFilters] = useState<Record<string, string>>({});
+  const [localFilters, setLocalFilters] = useSyncedLocalFilters(filterValues);
 
-  // 同步外部筛选值到本地状态
-  useEffect(() => {
-    const newLocalFilters: Record<string, string> = {};
-    if (filterValues) {
-      Object.entries(filterValues).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          newLocalFilters[key] = String(value);
-        }
-      });
-    }
-    setLocalFilters(newLocalFilters);
-  }, [filterValues]);
 
   const handleFilterChange = useCallback(
     (field: string, value: string) => {
       setLocalFilters(prev => ({ ...prev, [field]: value }));
     },
-    [],
+    [setLocalFilters],
   );
 
   const handleSearch = useCallback(() => {
@@ -1404,7 +1393,7 @@ const SearchHeaderCard = () => {
   const handleClear = useCallback(() => {
     setLocalFilters({});
     setFilters({}, displayedFilters);
-  }, [setFilters, displayedFilters]);
+  }, [setLocalFilters, setFilters, displayedFilters]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {

@@ -129,39 +129,4 @@ export const ConfirmDialog = ({
   );
 };
 
-/**
- * Hook to manage confirm dialog state
- */
-export const useConfirmDialog = () => {
-  const [open, setOpen] = React.useState(false);
-  const [pendingAction, setPendingAction] = React.useState<(() => void) | null>(null);
-
-  const showConfirm = useCallback((action: () => void) => {
-    setPendingAction(() => action);
-    setOpen(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setOpen(false);
-    setPendingAction(null);
-  }, []);
-
-  const handleConfirm = useCallback(() => {
-    if (pendingAction) {
-      pendingAction();
-    }
-    setOpen(false);
-    setPendingAction(null);
-  }, [pendingAction]);
-
-  return {
-    open,
-    showConfirm,
-    handleClose,
-    handleConfirm,
-  };
-};
-
-import React from 'react';
-
 export default ConfirmDialog;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import {
   Card,
@@ -21,26 +21,29 @@ interface DebugInfo {
   lastApiCall?: string;
 }
 
+function readAuthInfo(): DebugInfo {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  const username = localStorage.getItem('username');
+  return {
+    hasToken: !!token,
+    tokenLength: token ? token.length : 0,
+    tokenPreview: token ? token.substring(0, 20) + '...' : null,
+    hasUser: !!user,
+    userData: user ? JSON.parse(user) : null,
+    username: username,
+    timestamp: new Date().toISOString(),
+  };
+}
+
 export default function DebugAccountSettings() {
   const notify = useNotify();
-  const [debugInfo, setDebugInfo] = useState<DebugInfo>({});
+  // İlk değer doğrudan hesaplanır (önceden effect içinde setState → ek render).
+  const [debugInfo, setDebugInfo] = useState<DebugInfo>(readAuthInfo);
   const [loading, setLoading] = useState(false);
 
   const checkAuth = () => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    const username = localStorage.getItem('username');
-    
-    const info = {
-      hasToken: !!token,
-      tokenLength: token ? token.length : 0,
-      tokenPreview: token ? token.substring(0, 20) + '...' : null,
-      hasUser: !!user,
-      userData: user ? JSON.parse(user) : null,
-      username: username,
-      timestamp: new Date().toISOString()
-    };
-    
+    const info = readAuthInfo();
     setDebugInfo(info);
     console.log('Auth Debug Info:', info);
   };
@@ -95,10 +98,6 @@ export default function DebugAccountSettings() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', mt: 2, p: 2 }}>
