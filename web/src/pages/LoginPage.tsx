@@ -13,6 +13,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -56,6 +57,9 @@ export const LoginPage = () => {
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       }}
     >
+      <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+        <LanguageSwitcher color="#fff" />
+      </Box>
       <Card sx={{ minWidth: 400, maxWidth: 500, borderRadius: 2, boxShadow: 3 }}>
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ mb: 4, textAlign: 'center' }}>

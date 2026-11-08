@@ -1,4 +1,5 @@
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import { LOCALES } from '../i18n';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LanguageIcon from '@mui/icons-material/Language';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -133,24 +134,18 @@ export const CustomAppBar = (props: AppBarProps) => {
               horizontal: 'right',
             }}
           >
-            <MenuItem 
-              onClick={() => handleLanguageSelect('zh-CN')}
-              selected={locale === 'zh-CN'}
-            >
-              <ListItemIcon>
-                {locale === 'zh-CN' && '✓'}
-              </ListItemIcon>
-              <ListItemText>{translate('appbar.language.zh_CN')}</ListItemText>
-            </MenuItem>
-            <MenuItem 
-              onClick={() => handleLanguageSelect('en-US')}
-              selected={locale === 'en-US'}
-            >
-              <ListItemIcon>
-                {locale === 'en-US' && '✓'}
-              </ListItemIcon>
-              <ListItemText>{translate('appbar.language.en_US')}</ListItemText>
-            </MenuItem>
+            {LOCALES.map((l) => (
+              <MenuItem
+                key={l.locale}
+                onClick={() => handleLanguageSelect(l.locale)}
+                selected={locale === l.locale}
+              >
+                <ListItemIcon>
+                  {locale === l.locale && '✓'}
+                </ListItemIcon>
+                <ListItemText>{l.name}</ListItemText>
+              </MenuItem>
+            ))}
           </Menu>
 
           <Tooltip title={translate('appbar.toggle_theme')}>

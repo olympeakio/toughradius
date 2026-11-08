@@ -1,35 +1,42 @@
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import zhCN from './zh-CN';
 import enUS from './en-US';
+import trTR from './tr-TR';
 
 const translations = {
-  'zh-CN': zhCN,
+  'tr-TR': trTR,
   'en-US': enUS,
+  'zh-CN': zhCN,
 };
 
-// 从 localStorage 获取保存的语言设置，如果没有则使用默认语言
+/** Desteklenen diller (menülerde bu sırayla listelenir). */
+export const LOCALES = [
+  { locale: 'tr-TR', name: 'Türkçe' },
+  { locale: 'en-US', name: 'English' },
+  { locale: 'zh-CN', name: '简体中文' },
+] as const;
+
+export const DEFAULT_LOCALE = 'tr-TR';
+
+// localStorage'daki seçili dil; yoksa varsayılan Türkçe.
 const getDefaultLocale = () => {
   const savedLocale = localStorage.getItem('locale');
-  return savedLocale && translations[savedLocale as keyof typeof translations] 
-    ? savedLocale 
-    : 'zh-CN';
+  return savedLocale && translations[savedLocale as keyof typeof translations]
+    ? savedLocale
+    : DEFAULT_LOCALE;
 };
 
 const baseI18nProvider = polyglotI18nProvider(
-  (locale) => translations[locale as keyof typeof translations] || translations['zh-CN'],
-  getDefaultLocale(), // 使用保存的语言或默认语言
-  [
-    { locale: 'zh-CN', name: '简体中文' },
-    { locale: 'en-US', name: 'English' },
-  ],
+  (locale) => translations[locale as keyof typeof translations] || translations[DEFAULT_LOCALE],
+  getDefaultLocale(),
+  LOCALES.map((l) => ({ locale: l.locale, name: l.name })),
   { allowMissing: true }
 );
 
-// 包装 i18nProvider 以在切换语言时保存到 localStorage
+// Dil değişince localStorage'a yaz (sonraki açılışta korunur).
 export const i18nProvider = {
   ...baseI18nProvider,
   changeLocale: (locale: string) => {
-    // 保存语言设置到 localStorage
     localStorage.setItem('locale', locale);
     return baseI18nProvider.changeLocale(locale);
   },
