@@ -27,7 +27,7 @@ const customTurkishMessages: TranslationMessages = {
     accounting: 'Accounting Kayıtları',
     radius_profiles: 'Tarife/Profil Yönetimi',
     network: 'Ağ Yönetimi',
-    nas_devices: 'NAS Cihazları',
+    nas_devices: 'Ağ Cihazları',
     network_nodes: 'Ağ Düğümleri',
     system: 'Sistem Yönetimi',
     operators: 'Operatör Yönetimi',
@@ -409,7 +409,7 @@ const customTurkishMessages: TranslationMessages = {
       },
     },
     'network/nas': {
-      name: 'NAS Cihazı |||| NAS Cihazları',
+      name: 'Ağ Cihazı |||| Ağ Cihazları',
       fields: {
         id: 'ID',
         name: 'Cihaz Adı',
@@ -434,7 +434,7 @@ const customTurkishMessages: TranslationMessages = {
       sections: {
         basic: {
           title: 'Temel Bilgiler',
-          description: 'NAS cihazının temel yapılandırması',
+          description: 'Ağ cihazının (router, switch, AP, firewall) temel yapılandırması',
         },
         network: {
           title: 'Ağ Yapılandırması',
@@ -466,14 +466,14 @@ const customTurkishMessages: TranslationMessages = {
         no_remark: 'Not yok',
       },
       empty: {
-        title: 'Henüz NAS cihazı yok',
-        description: 'İlk NAS cihazını eklemek için "Oluştur" düğmesine tıklayın',
+        title: 'Henüz ağ cihazı yok',
+        description: 'RADIUS kullanacak ilk ağ cihazını (MikroTik, Ruijie, Huawei, Cisco…) eklemek için "Oluştur" düğmesine tıklayın',
       },
       filter: {
         title: 'Filtre Koşulları',
       },
       list: {
-        total: 'Toplam %{count} NAS cihazı',
+        total: 'Toplam %{count} ağ cihazı',
       },
     },
     'network/nodes': {

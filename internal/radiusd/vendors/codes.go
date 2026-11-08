@@ -17,4 +17,6 @@ const (
 	CodeMikrotik  = "14988"
 	CodeH3C       = "25506"
 	CodeHillstone = "28557"
+	CodeRuijie    = "4881"
+	CodeWISPr     = "14122"
 )

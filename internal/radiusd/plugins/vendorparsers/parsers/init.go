@@ -21,6 +21,14 @@ func init() {
 		Parser:      &DefaultParser{},
 	})
 
+	// Ruijie / Reyee: standart RADIUS öznitelikleri yeterli (MAC: Calling-Station-Id).
+	_ = vendors.Register(&vendors.VendorInfo{ //nolint:errcheck
+		Code:        vendors.CodeRuijie,
+		Name:        "Ruijie",
+		Description: "Ruijie / Reyee (standard attributes)",
+		Parser:      &DefaultParser{},
+	})
+
 	_ = vendors.Register(&vendors.VendorInfo{ //nolint:errcheck
 		Code:        vendors.CodeHuawei,
 		Name:        "Huawei",

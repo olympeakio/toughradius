@@ -42,6 +42,7 @@ func InitPlugins(appCtx app.ConfigManagerProvider, sessionRepo repository.Sessio
 	registry.RegisterResponseEnhancer(enhancers.NewIkuaiAcceptEnhancer())
 	registry.RegisterResponseEnhancer(enhancers.NewArubaAcceptEnhancer())
 	registry.RegisterResponseEnhancer(enhancers.NewCiscoAcceptEnhancer())
+	registry.RegisterResponseEnhancer(enhancers.NewRuijieAcceptEnhancer())
 
 	// Register authentication guards
 	var cfgGetter interface{ GetInt64(string, string) int64 }

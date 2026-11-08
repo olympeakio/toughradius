@@ -109,11 +109,14 @@ interface NASDevice extends RaRecord {
 
 // 厂商代码选项
 const VENDOR_CHOICES = [
-  { id: '9', name: 'Cisco' },
+  { id: '14988', name: 'MikroTik' },
+  { id: '4881', name: 'Ruijie / Reyee' },
   { id: '2011', name: 'Huawei' },
-  { id: '14988', name: 'Mikrotik' },
+  { id: '9', name: 'Cisco' },
   { id: '25506', name: 'H3C' },
   { id: '3902', name: 'ZTE' },
+  { id: '14823', name: 'Aruba' },
+  { id: '2636', name: 'Juniper' },
   { id: '10055', name: 'Ikuai' },
   { id: '0', name: 'Standard' },
 ];

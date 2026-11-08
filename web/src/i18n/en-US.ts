@@ -35,7 +35,7 @@ const customEnglishMessages: TranslationMessages = {
     accounting: 'Accounting Logs',
     radius_profiles: 'Profiles Management',
     network: 'Network Management',
-    nas_devices: 'NAS Devices',
+    nas_devices: 'Network Devices',
     network_nodes: 'Network Nodes',
     system: 'System Management',
     operators: 'Operators Management',
@@ -417,7 +417,7 @@ const customEnglishMessages: TranslationMessages = {
       },
     },
     'network/nas': {
-      name: 'NAS Device |||| NAS Devices',
+      name: 'Network Device |||| Network Devices',
       fields: {
         id: 'ID',
         name: 'Device Name',
@@ -474,14 +474,14 @@ const customEnglishMessages: TranslationMessages = {
         no_remark: 'No remark',
       },
       empty: {
-        title: 'No NAS devices yet',
-        description: 'Click "Create" to add the first NAS device',
+        title: 'No network devices yet',
+        description: 'Click "Create" to add the first network device (MikroTik, Ruijie, Huawei, Cisco…)',
       },
       filter: {
         title: 'Filters',
       },
       list: {
-        total: 'Total: %{count} NAS devices',
+        total: 'Total: %{count} network devices',
       },
     },
     'network/nodes': {
